@@ -23,6 +23,7 @@ Route::get('/{urls}', function () {
 
 Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
 
+    Route::get("test", 'testController@index');
 
     Route::get('admin/register', 'Admin\AuthController@showRegistrationForm')->name('admin.register');
     Route::post('admin/register', 'Admin\AuthController@register');

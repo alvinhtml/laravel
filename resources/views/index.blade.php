@@ -39,7 +39,7 @@
     <div id="webApplication"></div>
 
     <!-- JavaScript -->
-    <script type="text/javascript" src="http://project.xuehtml.com/react-redux/src/init.js"></script>
-    <script type="text/javascript" src="http://project.xuehtml.com/react-redux/src/bundle.js"></script>
+    <script type="text/javascript" src="/public/js/init.js"></script>
+    <script type="text/javascript" src="/public/js/bundle.js"></script>
 </body>
 </html>
