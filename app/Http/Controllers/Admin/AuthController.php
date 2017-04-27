@@ -260,6 +260,10 @@ class AuthController extends Controller
         return Admin::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'type' => rand(0, 2),
+            'ouid' => rand(0, 10),
+            'state' => rand(0, 1),
+            'desp' => '',
             'password' => bcrypt($data['password']),
         ]);
 

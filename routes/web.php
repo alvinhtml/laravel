@@ -36,24 +36,11 @@ Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
 
 
     //Route::auth();
-    //Route::get('home', 'HomeController@index');
-
-	/*Route::get('admin/login', 'Admin\AuthController@getLogin');
-    Route::post('admin/login', 'Admin\AuthController@postLogin');
-    Route::get('admin/register', 'Admin\AuthController@getRegister');
-    Route::post('admin/register', 'Admin\AuthController@postRegister');*/
-    Route::get('admin', 'AdminController@index');
 
 
-    //Admin Authentication Routes...
-    /*Route::get('admin/login', 'Admin\LoginController@showLoginForm')->name('login');
-    Route::post('admin/login', 'Admin\LoginController@login');
-    Route::post('admin/logout', 'Admin\LoginController@logout')->name('logout');
-
-    // Registration Routes...
-    Route::get('admin/register', 'Admin\RegisterController@showRegistrationForm')->name('register');
-    Route::post('admin/register', 'Admin\RegisterController@register');*/
-
+    //Admin
+    Route::get('admin', 'Admin\AdminController@showAdminList');
+    Route::get('admin/list', 'Admin\AdminController@showAdminList');
 
 
 

@@ -18,11 +18,10 @@ class CreateAdminsTable extends Migration
             $table->string('name')->comment("名称");
             $table->string('email')->unique()->comment("邮箱");
             $table->string('password', 255);
-            $table->integer('type')->default(0)->comment("类型");
-            $table->integer('ouid')->default(0)->comment("部门");
-            $table->integer('state')->default(0)->comment("状态");
-            $table->text('desp')->nullable()->comment("描述");
-            //$table->foreign('ouid')->references('id')->on('ou');
+            $table->integer('type')->index()->comment("类型");
+            $table->integer('ouid')->index()->comment("部门");
+            $table->integer('state')->index()->comment("状态");
+            $table->text('desp')->comment("描述");
             $table->rememberToken();
             $table->timestamps();
         });
