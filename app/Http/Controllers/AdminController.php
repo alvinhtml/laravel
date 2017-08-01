@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Libraries\Error;
 use Auth;
 
 class AdminController extends Controller
@@ -21,5 +22,15 @@ class AdminController extends Controller
         $admin = Auth::guard('admin')->user();
         return $admin->name;
     }
-    
+
+    public function logined()
+    {
+        $admin = Auth::guard('admin')->user();
+
+        $result = Error::make(0);
+        $result['logined'] = true;
+        $result['adminname'] = $admin['name'];
+        return response()->json($result);
+    }
+
 }

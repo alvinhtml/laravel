@@ -24,7 +24,7 @@
     <link type="text/css" rel="stylesheet" href="http://mui.xuehtml.com/src/css/simple-line-icons.css">
     <link type="text/css" rel="stylesheet" href="http://project.xuehtml.com/react-redux/src/css/style.css">
 
-    <title>React-redux</title>
+    <title>画方科技</title>
 
     <!-- Scripts -->
     <script>

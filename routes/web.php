@@ -25,23 +25,25 @@ Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
 
     Route::get("test", 'testController@index');
 
+    //admins register
     Route::get('admin/register', 'Admin\AuthController@showRegistrationForm')->name('admin.register');
     Route::post('admin/register', 'Admin\AuthController@register');
-    //Route::post('admin/register', 'Admin\RegisterController@register');
 
+    //admins login
     Route::get('admin/login', 'Admin\AuthController@showLoginForm')->name('admin.login');
 	Route::post('admin/login', 'Admin\AuthController@login');
+
+    //admins logout
 	Route::get('admin/logout', 'Admin\AuthController@logout')->name("admin.logout");
 
 
+    //Admins list
+    Route::get('admin', 'Admin\AdminController@showAdminList');
+    Route::get('admin/list', 'Admin\AdminController@showAdminList');
 
     //Route::auth();
 
 
-    //Admin
-    Route::get('admin', 'Admin\AdminController@showAdminList');
-    Route::get('admin/list', 'Admin\AdminController@showAdminList');
-
-
+    Route::get('logined', 'AdminController@logined')->name("logined");
 
 });

@@ -28,7 +28,7 @@ webpackJsonp([0],[
 
 	var _index2 = _interopRequireDefault(_index);
 
-	var _routes = __webpack_require__(645);
+	var _routes = __webpack_require__(646);
 
 	var _routes2 = _interopRequireDefault(_routes);
 
@@ -16636,17 +16636,20 @@ webpackJsonp([0],[
 
 	var _list = __webpack_require__(644);
 
-	//将routerReducer一起合并管理
-	console.log("login", _common.common);
+	var _adminlist = __webpack_require__(645);
 
 	//引入reducer
 	//利用combineReducers合并reducers
+	console.log("login", _common.common);
+
+	//将routerReducer一起合并管理
 	exports.default = (0, _redux.combineReducers)({
 
 		/* your reducers */
 		list: _list.list,
 		common: _common.common, //登录相关
 		header: _header.header, //头部相关
+		adminlist: _adminlist.adminlist, //管理员列表
 
 		routing: _reactRouterRedux.routerReducer
 	});
@@ -16723,6 +16726,10 @@ webpackJsonp([0],[
 	var POST_LOGIN = exports.POST_LOGIN = 'POST_LOGIN';
 	var POST_LOGOUT = exports.POST_LOGOUT = 'POST_LOGOUT';
 
+	//admin list
+	var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
+	var SET_ADMIN_CONFIG = exports.SET_ADMIN_CONFIG = 'SET_ADMIN_CONFIG';
+
 /***/ },
 /* 643 */
 /***/ function(module, exports, __webpack_require__) {
@@ -16770,7 +16777,7 @@ webpackJsonp([0],[
 	        text: '待办事项4'
 	    }],
 	    admin: {
-	        avatar: '/public/images/admin.png',
+	        avatar: 'http://laravel.xuehtml.com/public/images/admin.png',
 	        name: 'alvinhtml@gmail.com'
 	    },
 	    adminActions: [{
@@ -16855,33 +16862,142 @@ webpackJsonp([0],[
 	    value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入action类型常量名
+
+
+	exports.adminlist = adminlist;
+
+	var _constants = __webpack_require__(642);
+
+	//初始化状态
+	var adminlistInitialState = {
+	    isFetching: 0,
+	    error: 0,
+	    message: '',
+	    listActions: [{
+	        text: '删除',
+	        icon: 'icon-close'
+	    }, {
+	        text: '停用',
+	        icon: 'icon-ban'
+	    }, {
+	        text: '启用',
+	        icon: 'icon-check'
+	    }],
+	    list: [], //列表数据
+	    count: 0, //列表总条数
+	    page: 1, //当前页
+
+	    //列表配置
+	    configs: {
+	        tbname: 'admins',
+	        limit: 20, //单页显示条数
+	        searchMode: '精确搜索', //搜索模式
+	        column: [{
+	            name: 'index',
+	            title: '序号',
+	            order: false,
+	            visibility: true,
+	            width: 200
+	        }, {
+	            name: 'name',
+	            title: '名称',
+	            order: false,
+	            visibility: true,
+	            width: 200
+	        }, {
+	            name: 'email',
+	            title: '邮箱',
+	            order: false,
+	            visibility: true,
+	            width: 200
+	        }, {
+	            name: 'type',
+	            title: '类型',
+	            order: false,
+	            visibility: true,
+	            width: 200
+	        }, {
+	            name: 'ouname',
+	            title: '部门',
+	            order: false,
+	            visibility: true,
+	            width: 200
+	        }, {
+	            name: 'ip',
+	            title: '可登录IP',
+	            order: false,
+	            visibility: true,
+	            width: 0
+	        }, {
+	            name: 'state',
+	            title: '状态',
+	            order: false,
+	            visibility: true,
+	            width: 200
+	        }, {
+	            name: 'desp',
+	            title: '描述',
+	            order: false,
+	            visibility: true,
+	            width: 0
+	        }]
+	    }
+	};
+
+	function adminlist() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : adminlistInitialState;
+	    var action = arguments[1];
+
+
+	    //根据不同的action type进行state的更新
+	    switch (action.type) {
+	        case _constants.GET_ADMIN_LIST:
+	            return _extends({}, state, action.payload);
+	        default:
+	            return _extends({}, state);
+	    }
+	}
+
+/***/ },
+/* 646 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
 
 	var _reactRouter = __webpack_require__(216);
 
-	var _webapplication = __webpack_require__(646);
+	var _webapplication = __webpack_require__(647);
 
-	var _login = __webpack_require__(650);
+	var _login = __webpack_require__(651);
 
-	var _home = __webpack_require__(654);
+	var _home = __webpack_require__(655);
+
+	var _adminlist = __webpack_require__(656);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	//引入各个容器组件
 	exports.default = _react2.default.createElement(
 	    _reactRouter.Route,
 	    { path: '/', component: _webapplication.WebApplication },
 	    _react2.default.createElement(_reactRouter.IndexRoute, { component: _home.Home }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'home', component: _home.Home }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'login', component: _login.VisibleLogin }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'admin', component: _adminlist.Adminlist }),
 	    _react2.default.createElement(_reactRouter.Route, { path: '*', component: _home.Home })
 	);
 
-	//引入各个容器组件
-
 /***/ },
-/* 646 */
+/* 647 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16903,11 +17019,11 @@ webpackJsonp([0],[
 
 	var _reactRedux = __webpack_require__(178);
 
-	var _header = __webpack_require__(647);
+	var _header = __webpack_require__(648);
 
-	var _sidebar = __webpack_require__(649);
+	var _sidebar = __webpack_require__(650);
 
-	var _login = __webpack_require__(650);
+	var _login = __webpack_require__(651);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -16934,13 +17050,13 @@ webpackJsonp([0],[
 	                return _react2.default.createElement(
 	                    'div',
 	                    { className: 'manage' },
-	                    _react2.default.createElement(_header.VisibleHeader, null),
+	                    _react2.default.createElement(_header.Header, null),
 	                    _react2.default.createElement(_sidebar.Sidebar, null),
 	                    this.props.children
 	                );
 	            } else {
 	                console.log("Application", this.props);
-	                return _react2.default.createElement(_login.VisibleLogin, null);
+	                return _react2.default.createElement(_login.Login, null);
 	            }
 	        }
 	    }]);
@@ -16962,7 +17078,7 @@ webpackJsonp([0],[
 	})(Application);
 
 /***/ },
-/* 647 */
+/* 648 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16970,7 +17086,7 @@ webpackJsonp([0],[
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.VisibleHeader = undefined;
+	exports.Header = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -16980,11 +17096,9 @@ webpackJsonp([0],[
 
 	var _reactRouter = __webpack_require__(216);
 
-	var _redux = __webpack_require__(189);
-
 	var _reactRedux = __webpack_require__(178);
 
-	var _dropdown = __webpack_require__(648);
+	var _dropdown = __webpack_require__(649);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -16997,16 +17111,16 @@ webpackJsonp([0],[
 	//引入下拉菜单组件
 
 
-	var Header = function (_Component) {
-		_inherits(Header, _Component);
+	var HeaderUI = function (_Component) {
+		_inherits(HeaderUI, _Component);
 
-		function Header() {
-			_classCallCheck(this, Header);
+		function HeaderUI() {
+			_classCallCheck(this, HeaderUI);
 
-			return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).apply(this, arguments));
+			return _possibleConstructorReturn(this, (HeaderUI.__proto__ || Object.getPrototypeOf(HeaderUI)).apply(this, arguments));
 		}
 
-		_createClass(Header, [{
+		_createClass(HeaderUI, [{
 			key: 'render',
 			value: function render() {
 				var _props = this.props,
@@ -17018,9 +17132,10 @@ webpackJsonp([0],[
 				    tasksClickEvent = _props.tasksClickEvent,
 				    adminActions = _props.adminActions,
 				    adminActionsClickEvent = _props.adminActionsClickEvent,
-				    admin = _props.admin;
+				    admin = _props.admin,
+				    common = _props.common;
 
-
+				console.log("8.1", common);
 				return _react2.default.createElement(
 					'div',
 					{ className: 'header' },
@@ -17102,10 +17217,11 @@ webpackJsonp([0],[
 			}
 		}]);
 
-		return Header;
+		return HeaderUI;
 	}(_react.Component);
 
-	var VisibleHeader = exports.VisibleHeader = (0, _reactRedux.connect)(function (state) {
+	var Header = exports.Header = (0, _reactRedux.connect)(function (state) {
+		state.header.common = state.common;
 		return state.header;
 	}, function (dispatch, ownProps) {
 		return {
@@ -17122,10 +17238,10 @@ webpackJsonp([0],[
 				console.log("header admin click event", value);
 			}
 		};
-	})(Header);
+	})(HeaderUI);
 
 /***/ },
-/* 648 */
+/* 649 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17133,7 +17249,7 @@ webpackJsonp([0],[
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.Dropdown = exports.Dropmenu = undefined;
+	exports.Droptool = exports.Dropdown = exports.Dropmenu = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -17300,8 +17416,60 @@ webpackJsonp([0],[
 		return Dropdown;
 	}(_react.Component);
 
+	var Droptool = exports.Droptool = function (_Component3) {
+		_inherits(Droptool, _Component3);
+
+		function Droptool(props) {
+			_classCallCheck(this, Droptool);
+
+			//设置 initial state
+			var _this3 = _possibleConstructorReturn(this, (Droptool.__proto__ || Object.getPrototypeOf(Droptool)).call(this, props));
+
+			_this3.state = {
+				opened: false
+			};
+
+			//ES6 类中函数必须手动绑定
+			_this3.handleClick = _this3.handleClick.bind(_this3);
+			return _this3;
+		}
+
+		_createClass(Droptool, [{
+			key: 'handleClick',
+			value: function handleClick(event) {
+				this.setState({
+					opened: !this.state.opened
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var icon = this.props.icon;
+
+				return _react2.default.createElement(
+					'div',
+					{ className: this.state.opened ? 'dropdown open' : 'dropdown' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'dropdown-toggler', onClick: this.handleClick },
+						_react2.default.createElement('i', { className: icon }),
+						' \xA0 ',
+						_react2.default.createElement('i', { className: 'fa fa-angle-down' })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'dropdown-main dropdown-menu' },
+						this.props.children
+					)
+				);
+			}
+		}]);
+
+		return Droptool;
+	}(_react.Component);
+
 /***/ },
-/* 649 */
+/* 650 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17318,8 +17486,6 @@ webpackJsonp([0],[
 	var _react2 = _interopRequireDefault(_react);
 
 	var _reactRouter = __webpack_require__(216);
-
-	var _redux = __webpack_require__(189);
 
 	var _reactRedux = __webpack_require__(178);
 
@@ -17471,7 +17637,7 @@ webpackJsonp([0],[
 								{ className: 'nav-item' },
 								_react2.default.createElement(
 									_reactRouter.Link,
-									{ to: '/admin/list', className: 'nav-link' },
+									{ to: '/admin', className: 'nav-link' },
 									_react2.default.createElement('i', { className: 'icon-user' }),
 									_react2.default.createElement(
 										'span',
@@ -17521,7 +17687,7 @@ webpackJsonp([0],[
 	}(_react.Component);
 
 /***/ },
-/* 650 */
+/* 651 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17529,7 +17695,7 @@ webpackJsonp([0],[
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.VisibleLogin = undefined;
+	exports.Login = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -17543,9 +17709,7 @@ webpackJsonp([0],[
 
 	var _reactRedux = __webpack_require__(178);
 
-	var _actions = __webpack_require__(651);
-
-	var _constants = __webpack_require__(642);
+	var _actions = __webpack_require__(652);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17558,19 +17722,16 @@ webpackJsonp([0],[
 	//引入Action创建函数
 
 
-	//引入action类型常量名
+	var LoginUI = function (_Component) {
+		_inherits(LoginUI, _Component);
 
+		function LoginUI() {
+			_classCallCheck(this, LoginUI);
 
-	var Login = function (_Component) {
-		_inherits(Login, _Component);
-
-		function Login() {
-			_classCallCheck(this, Login);
-
-			return _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).apply(this, arguments));
+			return _possibleConstructorReturn(this, (LoginUI.__proto__ || Object.getPrototypeOf(LoginUI)).apply(this, arguments));
 		}
 
-		_createClass(Login, [{
+		_createClass(LoginUI, [{
 			key: 'render',
 			value: function render() {
 				var _props = this.props,
@@ -17641,10 +17802,10 @@ webpackJsonp([0],[
 			}
 		}]);
 
-		return Login;
+		return LoginUI;
 	}(_react.Component);
 
-	var VisibleLogin = exports.VisibleLogin = (0, _reactRedux.connect)(function (state) {
+	var Login = exports.Login = (0, _reactRedux.connect)(function (state) {
 		return state.common;
 	}, function (dispatch, ownProps) {
 		return {
@@ -17657,10 +17818,10 @@ webpackJsonp([0],[
 				}
 			}
 		};
-	})(Login);
+	})(LoginUI);
 
 /***/ },
-/* 651 */
+/* 652 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17676,7 +17837,7 @@ webpackJsonp([0],[
 	//引入action类型常量名
 
 
-	var _isomorphicFetch = __webpack_require__(652);
+	var _isomorphicFetch = __webpack_require__(653);
 
 	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -17800,9 +17961,9 @@ webpackJsonp([0],[
 	console.log('loginFetch', loginFetch);
 
 /***/ },
-/* 652 */,
 /* 653 */,
-/* 654 */
+/* 654 */,
+/* 655 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17877,6 +18038,767 @@ webpackJsonp([0],[
 	}];
 
 	<Myselect name="select1" id="select1" selected="2" options={selectOption}></Myselect>*/
+
+/***/ },
+/* 656 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.Adminlist = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(216);
+
+	var _reactRedux = __webpack_require__(178);
+
+	var _actions = __webpack_require__(652);
+
+	var _constants = __webpack_require__(642);
+
+	var _common = __webpack_require__(657);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	//引入Action创建函数
+
+
+	//引入action类型常量名
+
+
+	var AdminlistUI = function (_Component) {
+		_inherits(AdminlistUI, _Component);
+
+		function AdminlistUI() {
+			_classCallCheck(this, AdminlistUI);
+
+			return _possibleConstructorReturn(this, (AdminlistUI.__proto__ || Object.getPrototypeOf(AdminlistUI)).apply(this, arguments));
+		}
+
+		_createClass(AdminlistUI, [{
+			key: 'render',
+			value: function render() {
+				var _props = this.props,
+				    logo = _props.logo,
+				    logoname = _props.logoname,
+				    logined = _props.logined,
+				    version = _props.version,
+				    error = _props.error,
+				    message = _props.message,
+				    onSubmit = _props.onSubmit,
+				    onKeyPress = _props.onKeyPress;
+
+
+				var emailInput = void 0,
+				    passwordInput = void 0;
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'min-box' },
+					_react2.default.createElement(
+						_common.Pagebar,
+						{ title: '' },
+						_react2.default.createElement('i', { className: 'icon-calendar' }),
+						' Wed Aug 10 2016 10:51:20 GMT+0800'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'list-box' },
+						_react2.default.createElement(
+							'div',
+							{ id: 'olist_header', className: 'olist-header clear' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'olist-header-l' },
+								'// ',
+								_react2.default.createElement(
+									_common.ListActioner,
+									null,
+									'//  ',
+									_react2.default.createElement(
+										'li',
+										{ 'data-val': '0' },
+										_react2.default.createElement('i', { 'class': 'icon-close' }),
+										_react2.default.createElement(
+											'span',
+											{ 'class': 'itext' },
+											'\u5220\u9664'
+										)
+									),
+									'//     ',
+									_react2.default.createElement(
+										'li',
+										{ 'data-val': '1' },
+										_react2.default.createElement('i', { 'class': 'icon-layers' }),
+										_react2.default.createElement(
+											'span',
+											{ 'class': 'itext' },
+											'\u5408\u5E76'
+										)
+									),
+									'// '
+								),
+								'// ',
+								_react2.default.createElement(_common.ListSearcher, null)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'olist-header-r' },
+								_react2.default.createElement(
+									_reactRouter.Link,
+									{ 'data-content': '\u5237\u65B0', to: '/admin/list', className: 'olist-tool bg-teal ititle' },
+									_react2.default.createElement('i', { className: 'icon-refresh' })
+								),
+								_react2.default.createElement(
+									_reactRouter.Link,
+									{ 'data-content': '\u65B0\u5EFA', to: '/admin/form', className: 'olist-tool bg-teal ititle' },
+									_react2.default.createElement('i', { className: 'icon-plus' })
+								),
+								'//',
+								_react2.default.createElement(_common.ListConfiger, null)
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ id: 'OListTable', className: 'olist-main' },
+							_react2.default.createElement(
+								'table',
+								{ className: 'olist-table', id: 'olist_table' },
+								_react2.default.createElement(
+									'thead',
+									{ id: 'olist_thead' },
+									_react2.default.createElement(
+										'tr',
+										null,
+										_react2.default.createElement(
+											'th',
+											{ className: 'row-checkbox' },
+											_react2.default.createElement('input', { type: 'checkbox', ref: 'ival_checkbox_all' })
+										),
+										_react2.default.createElement(
+											'th',
+											null,
+											'\u64CD\u4F5C'
+										)
+									)
+								),
+								_react2.default.createElement('tbody', { id: 'olist_tbody', className: 'olist-body' })
+							)
+						)
+					)
+				);
+			}
+		}]);
+
+		return AdminlistUI;
+	}(_react.Component);
+
+	var Adminlist = exports.Adminlist = (0, _reactRedux.connect)(function (state) {
+		return state.adminlist;
+	}, function (dispatch, ownProps) {
+		return {
+			onSubmit: function onSubmit(email, password) {
+				dispatch((0, _actions.loginFetch)({ email: email, password: password }, '/common'));
+			},
+			onKeyPress: function onKeyPress(event, email, password) {
+				if (event.charCode === 13) {
+					dispatch((0, _actions.loginFetch)({ email: email, password: password }, '/common'));
+				}
+			}
+		};
+	})(AdminlistUI);
+
+/***/ },
+/* 657 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.ListBodyer = exports.ListHeader = exports.ListConfiger = exports.ListSearcher = exports.ListActioner = exports.Pagelist = exports.Pagebar = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(216);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Pagebar = exports.Pagebar = function (_Component) {
+		_inherits(Pagebar, _Component);
+
+		function Pagebar() {
+			_classCallCheck(this, Pagebar);
+
+			return _possibleConstructorReturn(this, (Pagebar.__proto__ || Object.getPrototypeOf(Pagebar)).apply(this, arguments));
+		}
+
+		_createClass(Pagebar, [{
+			key: 'render',
+			value: function render() {
+				var _props = this.props,
+				    title = _props.title,
+				    clickEvent = _props.clickEvent;
+
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'page-bar clear' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'page-bar-left' },
+						title
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'page-bar-right' },
+						this.props.children
+					)
+				);
+			}
+		}]);
+
+		return Pagebar;
+	}(_react.Component);
+
+	/**
+	 * 分页组件
+	 * @type {[type]}
+	 */
+
+
+	var Pagelist = exports.Pagelist = function (_Component2) {
+		_inherits(Pagelist, _Component2);
+
+		function Pagelist(props) {
+			_classCallCheck(this, Pagelist);
+
+			var _this2 = _possibleConstructorReturn(this, (Pagelist.__proto__ || Object.getPrototypeOf(Pagelist)).call(this, props));
+
+			_this2.gotoPage = _this2.props.page;
+
+			//ES6 类中函数必须手动绑定
+			_this2.pageClickEvent = _this2.pageClickEvent.bind(_this2);
+			_this2.inputEnterEvent = _this2.inputEnterEvent.bind(_this2);
+			_this2.gotoClickEvent = _this2.gotoClickEvent.bind(_this2);
+			return _this2;
+		}
+
+		_createClass(Pagelist, [{
+			key: 'pageClickEvent',
+			value: function pageClickEvent(event) {
+				this.getList({
+					page: event.currentTarget.getAttribute('data-val')
+				});
+			}
+		}, {
+			key: 'inputEnterEvent',
+			value: function inputEnterEvent(event) {
+				if (event.charCode === 13) {
+					this.getList({
+						page: this.gotoPage
+					});
+				}
+			}
+		}, {
+			key: 'gotoClickEvent',
+			value: function gotoClickEvent(event) {
+				this.getList({
+					page: this.gotoPage
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this3 = this;
+
+				var _props2 = this.props,
+				    count = _props2.count,
+				    limit = _props2.limit,
+				    page = _props2.page;
+
+
+				if (count > limit) {
+
+					//获取总页数
+					var _pageCount = count === 0 ? 0 : Math.ceil(count / limit);
+
+					var begin = 1,
+					    //起始页
+					showPage = 10; //要显示的页码个数
+
+					if (_pageCount < 11) {
+						showPage = _pageCount;
+					} else {
+						if (page > 6) {
+							begin = _pageCount - page > 5 ? page - 4 : _pageCount - 9;
+						}
+					}
+
+					var pages = [];
+					for (var i = 0; i < showPage; i++) {
+						var p = begin + i;
+						pages.push(_react2.default.createElement(
+							'a',
+							{ key: p, onClick: this.pageClickEvent, 'data-val': p, className: p == page ? 'active' : '' },
+							p
+						));
+					}
+
+					return _react2.default.createElement(
+						'div',
+						{ className: 'pagelist' },
+						_react2.default.createElement(
+							'b',
+							null,
+							count
+						),
+						'\u6761\u4FE1\u606F \u5171',
+						_react2.default.createElement(
+							'b',
+							null,
+							_pageCount
+						),
+						'\u9875 \u8F6C\u5230 ',
+						_react2.default.createElement('input', { onKeyPress: this.inputEnterEvent, type: 'text', onChange: function onChange(n) {
+								return _this3.gotoPage = n;
+							}, defaultValue: page }),
+						' \u9875',
+						_react2.default.createElement(
+							'a',
+							{ onClick: this.gotoClickEvent },
+							'Go'
+						),
+						_react2.default.createElement(
+							'a',
+							{ className: 'page-prev', 'data-val': page - 1 ? page - 1 : page, onClick: this.pageClickEvent },
+							_react2.default.createElement('i', { className: 'icon-arrow-left' })
+						),
+						pages,
+						_react2.default.createElement(
+							'a',
+							{ className: 'page-next', 'data-val': page + 1 < _pageCount ? page + 1 : _pageCount, onClick: this.pageClickEvent },
+							_react2.default.createElement('i', { className: 'icon-arrow-right' })
+						)
+					);
+				} else {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'pagelist' },
+						_react2.default.createElement(
+							'b',
+							null,
+							count
+						),
+						'\u6761\u4FE1\u606F \u5171',
+						_react2.default.createElement(
+							'b',
+							null,
+							pageCount
+						),
+						'\u9875'
+					);
+				}
+			}
+		}]);
+
+		return Pagelist;
+	}(_react.Component);
+
+	/**
+	 * 列表操作组件
+	 * @type {String}
+	 */
+
+
+	var ListActioner = exports.ListActioner = function (_Component3) {
+		_inherits(ListActioner, _Component3);
+
+		function ListActioner(props) {
+			_classCallCheck(this, ListActioner);
+
+			//this.search = this.props.search
+
+			//ES6 类中函数必须手动绑定
+			var _this4 = _possibleConstructorReturn(this, (ListActioner.__proto__ || Object.getPrototypeOf(ListActioner)).call(this, props));
+
+			_this4.inputEnterEvent = _this4.inputEnterEvent.bind(_this4);
+			_this4.searchSubmitEvent = _this4.searchSubmitEvent.bind(_this4);
+			return _this4;
+		}
+
+		_createClass(ListActioner, [{
+			key: 'inputEnterEvent',
+			value: function inputEnterEvent(event) {
+				if (event.charCode === 13) {
+					this.getList({
+						search: this.search
+					});
+				}
+			}
+		}, {
+			key: 'searchSubmitEvent',
+			value: function searchSubmitEvent(event) {
+				this.getList({
+					search: this.search
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _props3 = this.props,
+				    searchMode = _props3.searchMode,
+				    search = _props3.search,
+				    setSearchMode = _props3.setSearchMode;
+
+
+				return _react2.default.createElement(
+					'div',
+					{ 'class': 'olist-tool olist-operation dropdown' },
+					_react2.default.createElement(
+						'a',
+						{ 'class': 'dropdown-toggle bg-red' },
+						_react2.default.createElement('i', { 'class': 'icon-wrench' }),
+						' \xA0 ',
+						_react2.default.createElement('i', { 'class': 'fa fa-angle-down' })
+					),
+					_react2.default.createElement(
+						'div',
+						{ 'class': 'dropdown-main dropdown-menu' },
+						_react2.default.createElement(
+							'ul',
+							{ 'class': 'ul-option' },
+							this.props.children
+						)
+					)
+				);
+			}
+		}]);
+
+		return ListActioner;
+	}(_react.Component);
+
+	/**
+	 * 列表搜索组件
+	 * @type {String}
+	 */
+
+
+	var ListSearcher = exports.ListSearcher = function (_Component4) {
+		_inherits(ListSearcher, _Component4);
+
+		function ListSearcher(props) {
+			_classCallCheck(this, ListSearcher);
+
+			var _this5 = _possibleConstructorReturn(this, (ListSearcher.__proto__ || Object.getPrototypeOf(ListSearcher)).call(this, props));
+
+			_this5.search = _this5.props.search;
+
+			//ES6 类中函数必须手动绑定
+			_this5.inputEnterEvent = _this5.inputEnterEvent.bind(_this5);
+			_this5.searchSubmitEvent = _this5.searchSubmitEvent.bind(_this5);
+			return _this5;
+		}
+
+		_createClass(ListSearcher, [{
+			key: 'inputEnterEvent',
+			value: function inputEnterEvent(event) {
+				if (event.charCode === 13) {
+					this.getList({
+						search: this.search
+					});
+				}
+			}
+		}, {
+			key: 'searchSubmitEvent',
+			value: function searchSubmitEvent(event) {
+				this.getList({
+					search: this.search
+				});
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this6 = this;
+
+				var _props4 = this.props,
+				    searchMode = _props4.searchMode,
+				    search = _props4.search,
+				    setSearchMode = _props4.setSearchMode;
+
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'olist-tool olist-search' },
+					_react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(n) {
+							return _this6.search = n;
+						}, placeholder: searchMode, defaultValue: search, onKeyPress: this.inputEnterEvent }),
+					_react2.default.createElement(
+						'div',
+						{ className: 'olist-where dropdown' },
+						_react2.default.createElement(
+							'a',
+							{ className: 'dropdown-toggle' },
+							_react2.default.createElement('i', { className: 'fa fa-angle-down' })
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'dropdown-main dropdown-menu' },
+							_react2.default.createElement(
+								'ul',
+								{ id: 'listSearch' },
+								_react2.default.createElement(
+									'li',
+									{ key: 1, onClick: function onClick(e) {
+											return setSearchMode('模糊搜索');
+										} },
+									_react2.default.createElement('i', { className: 'icon-magnifier' }),
+									_react2.default.createElement(
+										'span',
+										{ className: 'itext' },
+										'\u6A21\u7CCA\u641C\u7D22'
+									)
+								),
+								_react2.default.createElement(
+									'li',
+									{ key: 2, onClick: function onClick(e) {
+											return setSearchMode('精确搜索');
+										} },
+									_react2.default.createElement('i', { className: 'icon-magnifier-add' }),
+									_react2.default.createElement(
+										'span',
+										{ className: 'itext' },
+										'\u7CBE\u786E\u641C\u7D22'
+									)
+								),
+								this.props.children
+							)
+						)
+					),
+					_react2.default.createElement(
+						'span',
+						{ className: 'button blue', onClick: this.searchSubmitEvent, type: 'button' },
+						'\u641C\u7D22'
+					)
+				);
+			}
+		}]);
+
+		return ListSearcher;
+	}(_react.Component);
+
+	/**
+	 * 列表配置
+	 * @type {String}
+	 */
+
+
+	var ListConfiger = exports.ListConfiger = function (_Component5) {
+		_inherits(ListConfiger, _Component5);
+
+		function ListConfiger() {
+			_classCallCheck(this, ListConfiger);
+
+			return _possibleConstructorReturn(this, (ListConfiger.__proto__ || Object.getPrototypeOf(ListConfiger)).apply(this, arguments));
+		}
+
+		_createClass(ListConfiger, [{
+			key: 'render',
+			value: function render() {
+				var _props5 = this.props,
+				    column = _props5.column,
+				    limit = _props5.limit,
+				    changeLimitEvent = _props5.changeLimitEvent,
+				    changeColumnEvent = _props5.changeColumnEvent;
+
+
+				var limitArray = [10, 20, 30, 50, 100, 200];
+
+				var limits = limitArray.map(function (v, i) {
+					return _react2.default.createElement(
+						'span',
+						{ key: i, onClick: function onClick(e) {
+								return changeLimitEvent(e.currentTarget.getAttribute("data-val"));
+							}, 'data-val': v, className: v == limit ? 'active' : '' },
+						v
+					);
+				});
+
+				var columns = column.map(function (v, i) {
+					return _react2.default.createElement(
+						'span',
+						{ key: i, onClick: function onClick(e) {
+								return changeColumnEvent(e.currentTarget.getAttribute("data-id"));
+							}, className: v.visibility ? 'active' : '', 'data-id': v.name },
+						v.title
+					);
+				});
+
+				return _react2.default.createElement(
+					'div',
+					{ className: 'olist-tool dropdown' },
+					_react2.default.createElement(
+						'a',
+						{ className: 'bg-teal dropdown-toggle' },
+						_react2.default.createElement('i', { className: 'icon-settings' })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'dropdown-main dropdown-menu dropdown-dark dropdown-right' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'olist-tool-conf' },
+							_react2.default.createElement(
+								'h4',
+								null,
+								'\u6BCF\u9875\u663E\u793A\u6570\u91CF'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'tools-span-list page-limit' },
+								limits
+							),
+							_react2.default.createElement(
+								'h4',
+								null,
+								'\u663E\u793A\u9879\u76EE'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'list-column' },
+								columnhtml
+							)
+						)
+					)
+				);
+			}
+		}]);
+
+		return ListConfiger;
+	}(_react.Component);
+
+	/**
+	 * 列表头部
+	 * @type {Array}
+	 */
+
+
+	var ListHeader = exports.ListHeader = function (_Component6) {
+		_inherits(ListHeader, _Component6);
+
+		function ListHeader() {
+			_classCallCheck(this, ListHeader);
+
+			return _possibleConstructorReturn(this, (ListHeader.__proto__ || Object.getPrototypeOf(ListHeader)).apply(this, arguments));
+		}
+
+		_createClass(ListHeader, [{
+			key: 'render',
+			value: function render() {
+				var _props6 = this.props,
+				    column = _props6.column,
+				    orderbyEvent = _props6.orderbyEvent;
+
+
+				var columns = column.map(function (v, i) {
+					var resizer = v.resize ? _react2.default.createElement('span', { className: 'resize' }) : '';
+					return _react2.default.createElement(
+						'th',
+						{
+							key: i,
+							className: v.order ? v.order : '',
+							onClick: orderbyEvent,
+							'data-order': v.order,
+							'data-val': v.name,
+							style: v.width ? 'width:' + v.width + 'px' : ''
+						},
+						v.title,
+						resizer
+					);
+				});
+
+				return _react2.default.createElement(
+					'thead',
+					{ id: 'listThead' },
+					_react2.default.createElement(
+						'tr',
+						null,
+						columns
+					)
+				);
+			}
+		}]);
+
+		return ListHeader;
+	}(_react.Component);
+
+	var ListBodyer = exports.ListBodyer = function (_Component7) {
+		_inherits(ListBodyer, _Component7);
+
+		function ListBodyer() {
+			_classCallCheck(this, ListBodyer);
+
+			return _possibleConstructorReturn(this, (ListBodyer.__proto__ || Object.getPrototypeOf(ListBodyer)).apply(this, arguments));
+		}
+
+		_createClass(ListBodyer, [{
+			key: 'render',
+			value: function render() {
+				var list = this.props.list;
+
+
+				var lines = function lines(line) {
+
+					var columns = column.map(function (v, i) {
+						return _react2.default.createElement(
+							'td',
+							{ key: i },
+							line[v.name]
+						);
+					});
+
+					return _react2.default.createElement(
+						'tr',
+						null,
+						columns
+					);
+				};
+
+				var lists = list.map(function (v, i) {
+					return lines(v);
+				});
+
+				return _react2.default.createElement('thead', { id: 'listThead' });
+			}
+		}]);
+
+		return ListBodyer;
+	}(_react.Component);
 
 /***/ }
 ]);
