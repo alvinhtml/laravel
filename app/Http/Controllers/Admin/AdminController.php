@@ -33,7 +33,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-
+        
     }
 
     /**
@@ -46,6 +46,21 @@ class AdminController extends Controller
     {
         //
     }
+
+    /**
+     * common auth info
+     * @return [type] [description]
+     */
+    public function authInfo()
+    {
+        $admin = Auth::guard('admin')->user();
+        $result = Error::make(0);
+        $result['logined'] = true;
+        $result['adminname'] = $admin['name'];
+        $result['adminemail'] = $admin['email'];
+        return response()->json($result);
+    }
+
 
     /**
      * Display the specified resource.

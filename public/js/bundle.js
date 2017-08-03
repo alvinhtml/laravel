@@ -17043,6 +17043,11 @@ webpackJsonp([0],[
 	    }
 
 	    _createClass(Application, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            console.log("395", "1");
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 
@@ -17136,6 +17141,11 @@ webpackJsonp([0],[
 				    common = _props.common;
 
 				console.log("8.1", common);
+
+				if (common.logined !== true) {
+					this.context.router.push("/");
+				}
+
 				return _react2.default.createElement(
 					'div',
 					{ className: 'header' },

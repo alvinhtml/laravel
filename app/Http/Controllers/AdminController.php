@@ -25,6 +25,7 @@ class AdminController extends Controller
 
     public function logined()
     {
+        echo "1111";
         $admin = Auth::guard('admin')->user();
 
         $result = Error::make(0);

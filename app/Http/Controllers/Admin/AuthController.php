@@ -90,11 +90,7 @@ class AuthController extends Controller
 
         //dd($qdata);
 
-        $result = Error::make(0);
-        $result['logined'] = true;
-        return response()->json($result);
 
-        die;
         $this->validateLogin($request);
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
@@ -114,8 +110,13 @@ class AuthController extends Controller
             //清除登录次数限制
             $this->clearLoginAttempts($request);
 
-            return redirect("/api/admin");
-            //return response()->json(Error::make(0));
+            //return redirect("/api/admin");
+
+            //返回登录成功后的 json 信息
+            $result = Error::make(0);
+            $result['logined'] = true;
+            return response()->json($result);
+
 
         }
 
