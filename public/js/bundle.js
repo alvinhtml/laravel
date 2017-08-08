@@ -16691,6 +16691,8 @@ webpackJsonp([0],[
 	    switch (action.type) {
 	        case _constants.POST_LOGIN:
 	            return _extends({}, state, action.payload);
+	        case _constants.GET_AUTH_INFO:
+	            return _extends({}, state, action.payload);
 	        default:
 	            return _extends({}, state);
 	    }
@@ -16721,6 +16723,9 @@ webpackJsonp([0],[
 	var RECEIVEPOST = exports.RECEIVEPOST = 'RECEIVEPOST';
 	var REQUESTGET = exports.REQUESTGET = 'REQUESTGET';
 	var RECEIVEGET = exports.RECEIVEGET = 'RECEIVEGET';
+
+	//common
+	var GET_AUTH_INFO = exports.GET_AUTH_INFO = 'GET_AUTH_INFO';
 
 	//login
 	var POST_LOGIN = exports.POST_LOGIN = 'POST_LOGIN';
@@ -16977,7 +16982,7 @@ webpackJsonp([0],[
 
 	var _webapplication = __webpack_require__(647);
 
-	var _login = __webpack_require__(651);
+	var _login = __webpack_require__(654);
 
 	var _home = __webpack_require__(655);
 
@@ -17021,9 +17026,11 @@ webpackJsonp([0],[
 
 	var _header = __webpack_require__(648);
 
-	var _sidebar = __webpack_require__(650);
+	var _sidebar = __webpack_require__(653);
 
-	var _login = __webpack_require__(651);
+	var _login = __webpack_require__(654);
+
+	var _actions = __webpack_require__(650);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17032,6 +17039,9 @@ webpackJsonp([0],[
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	//引入Action创建函数
+
 
 	var Application = function (_Component) {
 	    _inherits(Application, _Component);
@@ -17045,11 +17055,13 @@ webpackJsonp([0],[
 	    _createClass(Application, [{
 	        key: 'componentWillMount',
 	        value: function componentWillMount() {
-	            console.log("395", "1");
+	            this.props.onWillMount();
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
+
+	            console.log("logined::", this.props.logined);
 
 	            if (this.props.logined) {
 	                return _react2.default.createElement(
@@ -17073,12 +17085,9 @@ webpackJsonp([0],[
 	    return { logined: state.common.logined };
 	}, function (dispatch) {
 	    return {
-	        /*onSubmit: () => {
-	        dispatch({
-	        type: 'LOGIN',
-	        filter: ""
-	        });
-	        }*/
+	        onWillMount: function onWillMount() {
+	            dispatch((0, _actions.authInfo)('/common'));
+	        }
 	    };
 	})(Application);
 
@@ -17105,6 +17114,8 @@ webpackJsonp([0],[
 
 	var _dropdown = __webpack_require__(649);
 
+	var _actions = __webpack_require__(650);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17114,6 +17125,9 @@ webpackJsonp([0],[
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	//引入下拉菜单组件
+
+
+	//引入Action创建函数
 
 
 	var HeaderUI = function (_Component) {
@@ -17246,6 +17260,13 @@ webpackJsonp([0],[
 			},
 			adminActionsClickEvent: function adminActionsClickEvent(value) {
 				console.log("header admin click event", value);
+				switch (value) {
+					case "3":
+						dispatch((0, _actions.logoutFetch)('/common'));
+						break;
+					default:
+
+				}
 			}
 		};
 	})(HeaderUI);
@@ -17485,6 +17506,242 @@ webpackJsonp([0],[
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.authInfo = exports.logoutFetch = exports.loginFetch = exports.receiveGets = exports.requestGets = exports.receivePosts = exports.requestPosts = undefined;
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入isomorphic-fetch API来进行Ajax
+
+
+	//引入action类型常量名
+
+
+	var _isomorphicFetch = __webpack_require__(651);
+
+	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
+	var _constants = __webpack_require__(642);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * json to url
+	 * @param  {[json]} data json
+	 * @return {[string]}
+	 */
+	function formatParams(data) {
+	    var arr = [];
+	    for (var name in data) {
+	        arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+	    }
+	    return arr.join("&");
+	}
+
+	/**
+	 * Action Creators 生成器
+	 * @param  {[type]} type     action.type
+	 * @param  {[type]} argNames action argument
+	 * @return {[type]}          action creator
+	 */
+	var makeActionCreator = function makeActionCreator(type) {
+	    for (var _len = arguments.length, argNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	        argNames[_key - 1] = arguments[_key];
+	    }
+
+	    return function () {
+	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	            args[_key2] = arguments[_key2];
+	        }
+
+	        var action = { type: type };
+	        argNames.forEach(function (arg, index) {
+	            action[argNames[index]] = args[index];
+	        });
+	        return action;
+	    };
+	};
+
+	//发起POST请求
+	var requestPosts = exports.requestPosts = makeActionCreator(_constants.REQUESTPOST, "payload", "path", "error");
+	//接收POST请求
+	var receivePosts = exports.receivePosts = makeActionCreator(_constants.RECEIVEPOST, "payload", "path", "error");
+	//发起GET请求
+	var requestGets = exports.requestGets = makeActionCreator(_constants.REQUESTGET, "payload", "path", "error");
+	//接收GET请求
+	var receiveGets = exports.receiveGets = makeActionCreator(_constants.RECEIVEGET, "payload", "path", "error");
+
+	//异步Action函数创建器 POST请求
+	var makePostActionCreator = function makePostActionCreator(type, url) {
+
+	    return function () {
+	        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+	            args[_key3] = arguments[_key3];
+	        }
+
+	        return function (dispatch, getState) {
+	            var _ref = [].concat(args),
+	                body = _ref[0],
+	                path = _ref[1],
+	                error = _ref[2];
+
+	            //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
+
+
+	            dispatch({
+	                type: type,
+	                payload: {
+	                    isFetching: true
+	                },
+	                path: path
+	            });
+
+	            //发起fetch请求
+	            return (0, _isomorphicFetch2.default)(url, {
+	                method: "POST",
+	                //请求带上cookie
+	                credentials: 'include',
+	                headers: {
+	                    'Accept': 'application/json, text/javascript, */*; q=0.01',
+	                    'Content-Type': 'application/json',
+	                    'X-CSRF-TOKEN': window.Laravel.csrfToken
+	                },
+	                body: JSON.stringify(_extends({ _token: window.Laravel.csrfToken }, body))
+	            })
+
+	            //判断HTTP请求结果，200-299 表示请求成功
+	            .then(function (response) {
+	                if (response.status >= 200 && response.status < 300) {
+	                    return response;
+	                } else {
+	                    var error = new Error(response.statusText);
+	                    error.response = response;
+	                    throw error;
+	                }
+	            })
+
+	            //生成JSON.parse(responseText)的结果
+	            .then(function (response) {
+	                return response.json();
+	            })
+
+	            //获取并处理请求结果
+	            .then(function (json) {
+	                console.log("then json");
+	                return dispatch({
+	                    type: type,
+	                    path: path,
+	                    payload: _extends({
+	                        isFetching: false
+	                    }, json)
+	                });
+	            })
+
+	            //处理请求错误
+	            .catch(function (error) {
+	                //
+	            });
+	        };
+	    };
+	};
+
+	//异步Action函数创建器 GET请求
+	var makeGetActionCreator = function makeGetActionCreator(type, url) {
+
+	    return function () {
+	        for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+	            args[_key4] = arguments[_key4];
+	        }
+
+	        return function (dispatch, getState) {
+	            var _ref2 = [].concat(args),
+	                body = _ref2[0],
+	                path = _ref2[1],
+	                error = _ref2[2];
+
+	            //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
+
+
+	            dispatch({
+	                type: type,
+	                payload: {
+	                    isFetching: true
+	                },
+	                path: path
+	            });
+
+	            //将json参数转为url参数
+	            var urlParams = body ? formatParams(body) : '';
+
+	            //发起fetch请求
+	            return (0, _isomorphicFetch2.default)(url + '?' + urlParams, {
+	                method: "GET",
+	                //请求带上cookie
+	                credentials: 'include',
+	                headers: {
+	                    'Accept': 'application/json, text/javascript, */*; q=0.01',
+	                    'Content-Type': 'application/json',
+	                    'X-CSRF-TOKEN': window.Laravel.csrfToken
+	                }
+	            })
+
+	            //判断HTTP请求结果，200-299 表示请求成功
+	            .then(function (response) {
+	                if (response.status >= 200 && response.status < 300) {
+	                    return response;
+	                } else {
+	                    var error = new Error(response.statusText);
+	                    error.response = response;
+	                    throw error;
+	                }
+	            })
+
+	            //生成JSON.parse(responseText)的结果
+	            .then(function (response) {
+	                return response.json();
+	            })
+
+	            //获取并处理请求结果
+	            .then(function (json) {
+	                console.log("then json");
+	                return dispatch({
+	                    type: type,
+	                    path: path,
+	                    payload: _extends({
+	                        isFetching: false
+	                    }, json)
+	                });
+	            })
+
+	            //处理请求错误
+	            .catch(function (error) {
+	                //
+	            });
+	        };
+	    };
+	};
+
+	//feps(body, payload, path)
+
+
+	//发送登录请求
+	var loginFetch = exports.loginFetch = makePostActionCreator(_constants.POST_LOGIN, '/api/admin/login', 'body', 'path', 'error');
+	//退出登录
+	var logoutFetch = exports.logoutFetch = makeGetActionCreator(_constants.POST_LOGIN, '/api/admin/logout', 'path', 'error');
+
+	//获取认证信息
+	var authInfo = exports.authInfo = makeGetActionCreator(_constants.GET_AUTH_INFO, '/api/authinfo', 'path', 'error');
+
+	console.log('loginFetch', loginFetch);
+
+/***/ },
+/* 651 */,
+/* 652 */,
+/* 653 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
 	exports.Sidebar = undefined;
@@ -17697,7 +17954,7 @@ webpackJsonp([0],[
 	}(_react.Component);
 
 /***/ },
-/* 651 */
+/* 654 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17719,7 +17976,7 @@ webpackJsonp([0],[
 
 	var _reactRedux = __webpack_require__(178);
 
-	var _actions = __webpack_require__(652);
+	var _actions = __webpack_require__(650);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17831,148 +18088,6 @@ webpackJsonp([0],[
 	})(LoginUI);
 
 /***/ },
-/* 652 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.loginFetch = exports.receiveGets = exports.requestGets = exports.receivePosts = exports.requestPosts = undefined;
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入isomorphic-fetch API来进行Ajax
-
-
-	//引入action类型常量名
-
-
-	var _isomorphicFetch = __webpack_require__(653);
-
-	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
-
-	var _constants = __webpack_require__(642);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Action Creators 生成器
-	 * @param  {[type]} type     action.type
-	 * @param  {[type]} argNames action argument
-	 * @return {[type]}          action creator
-	 */
-	var makeActionCreator = function makeActionCreator(type) {
-	    for (var _len = arguments.length, argNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	        argNames[_key - 1] = arguments[_key];
-	    }
-
-	    return function () {
-	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	            args[_key2] = arguments[_key2];
-	        }
-
-	        var action = { type: type };
-	        argNames.forEach(function (arg, index) {
-	            action[argNames[index]] = args[index];
-	        });
-	        return action;
-	    };
-	};
-
-	//发起POST请求
-	var requestPosts = exports.requestPosts = makeActionCreator(_constants.REQUESTPOST, "payload", "path", "error");
-	//接收POST请求
-	var receivePosts = exports.receivePosts = makeActionCreator(_constants.RECEIVEPOST, "payload", "path", "error");
-	//发起GET请求
-	var requestGets = exports.requestGets = makeActionCreator(_constants.REQUESTGET, "payload", "path", "error");
-	//发起GET请求
-	var receiveGets = exports.receiveGets = makeActionCreator(_constants.RECEIVEGET, "payload", "path", "error");
-
-	//异步Action函数创建器
-	var makePostActionCreator = function makePostActionCreator(type, url) {
-
-	    return function () {
-	        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-	            args[_key3] = arguments[_key3];
-	        }
-
-	        return function (dispatch, getState) {
-	            var _ref = [].concat(args),
-	                body = _ref[0],
-	                path = _ref[1],
-	                error = _ref[2];
-
-	            //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
-
-
-	            dispatch({
-	                type: type,
-	                payload: {
-	                    isFetching: true
-	                },
-	                path: path
-	            });
-
-	            //发起fetch请求
-	            return (0, _isomorphicFetch2.default)(url, {
-	                method: "POST",
-	                //请求带上cookie
-	                credentials: 'include',
-	                headers: {
-	                    'Accept': 'application/json, text/javascript, */*; q=0.01',
-	                    'Content-Type': 'application/json',
-	                    'X-CSRF-TOKEN': window.Laravel.csrfToken
-	                },
-	                body: JSON.stringify(_extends({ _token: window.Laravel.csrfToken }, body))
-	            })
-
-	            //判断HTTP请求结果，200-299 表示请求成功
-	            .then(function (response) {
-	                if (response.status >= 200 && response.status < 300) {
-
-	                    return response;
-	                } else {
-	                    var error = new Error(response.statusText);
-	                    error.response = response;
-	                    throw error;
-	                }
-	            })
-
-	            //生成JSON.parse(responseText)的结果
-	            .then(function (response) {
-	                return response.json();
-	            })
-
-	            //获取并处理请求结果
-	            .then(function (json) {
-	                console.log("then json");
-	                return dispatch({
-	                    type: type,
-	                    path: path,
-	                    payload: _extends({
-	                        isFetching: false
-	                    }, json)
-	                });
-	            })
-
-	            //处理请求错误
-	            .catch(function (error) {
-	                //
-	            });
-	        };
-	    };
-	};
-
-	//feps(body, payload, path)
-
-
-	var loginFetch = exports.loginFetch = makePostActionCreator(_constants.POST_LOGIN, '/api/admin/login', 'body', 'path', 'error');
-
-	console.log('loginFetch', loginFetch);
-
-/***/ },
-/* 653 */,
-/* 654 */,
 /* 655 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -18070,7 +18185,7 @@ webpackJsonp([0],[
 
 	var _reactRedux = __webpack_require__(178);
 
-	var _actions = __webpack_require__(652);
+	var _actions = __webpack_require__(650);
 
 	var _constants = __webpack_require__(642);
 

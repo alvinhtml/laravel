@@ -105,7 +105,7 @@
 	__webpack_require__(178);
 	__webpack_require__(269);
 	__webpack_require__(275);
-	module.exports = __webpack_require__(653);
+	module.exports = __webpack_require__(651);
 
 
 /***/ },
@@ -29483,21 +29483,19 @@
 /* 648 */,
 /* 649 */,
 /* 650 */,
-/* 651 */,
-/* 652 */,
-/* 653 */
+/* 651 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// the whatwg-fetch polyfill installs the fetch() function
 	// on the global object (window or self)
 	//
 	// Return that as the export for use in Webpack, Browserify etc.
-	__webpack_require__(654);
+	__webpack_require__(652);
 	module.exports = self.fetch.bind(self);
 
 
 /***/ },
-/* 654 */
+/* 652 */
 /***/ function(module, exports) {
 
 	(function(self) {

@@ -241,7 +241,10 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect('/');
+        //返回退出成功后的 json 信息
+        $result = Error::make(0);
+        $result['logined'] = false;
+        return response()->json($result);
     }
 
     protected function validator(array $data)
