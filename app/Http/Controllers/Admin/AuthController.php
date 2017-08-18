@@ -244,6 +244,8 @@ class AuthController extends Controller
         //返回退出成功后的 json 信息
         $result = Error::make(0);
         $result['logined'] = false;
+        $result['message'] = '退出登录成功!';
+        $result['renew_csrf_token'] = 1;
         return response()->json($result);
     }
 

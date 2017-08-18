@@ -16674,6 +16674,7 @@ webpackJsonp([0],[
 	//初始化状态
 	var commonInitialState = {
 	    logined: 0,
+	    renew_csrf_token: 0,
 	    isFetching: 0,
 	    error: 0,
 	    version: '10.0.106',
@@ -16690,6 +16691,8 @@ webpackJsonp([0],[
 	    //根据不同的action type进行state的更新
 	    switch (action.type) {
 	        case _constants.POST_LOGIN:
+	            return _extends({}, state, action.payload);
+	        case _constants.GET_LOGOUT:
 	            return _extends({}, state, action.payload);
 	        case _constants.GET_AUTH_INFO:
 	            return _extends({}, state, action.payload);
@@ -16729,7 +16732,7 @@ webpackJsonp([0],[
 
 	//login
 	var POST_LOGIN = exports.POST_LOGIN = 'POST_LOGIN';
-	var POST_LOGOUT = exports.POST_LOGOUT = 'POST_LOGOUT';
+	var GET_LOGOUT = exports.GET_LOGOUT = 'GET_LOGOUT';
 
 	//admin list
 	var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
@@ -16807,9 +16810,7 @@ webpackJsonp([0],[
 
 	    //根据不同的action type进行state的更新
 	    switch (action.type) {
-	        case _constants.POST_LOGOUT:
-	            //这里的 state 实际上是 state.header, 我想修改 state.common
-	            return _extends({}, state, action.payload);
+
 	        default:
 	            return _extends({}, state);
 	    }
@@ -17086,7 +17087,7 @@ webpackJsonp([0],[
 	}, function (dispatch) {
 	    return {
 	        onWillMount: function onWillMount() {
-	            dispatch((0, _actions.authInfo)('/common'));
+	            dispatch((0, _actions.authInfo)());
 	        }
 	    };
 	})(Application);
@@ -17101,6 +17102,8 @@ webpackJsonp([0],[
 		value: true
 	});
 	exports.Header = undefined;
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -17152,11 +17155,10 @@ webpackJsonp([0],[
 				    adminActions = _props.adminActions,
 				    adminActionsClickEvent = _props.adminActionsClickEvent,
 				    admin = _props.admin,
-				    common = _props.common;
+				    logined = _props.logined;
+				//console.log("8.1", common);
 
-				console.log("8.1", common);
-
-				if (common.logined !== true) {
+				if (logined !== true) {
 					this.context.router.push("/");
 				}
 
@@ -17245,8 +17247,7 @@ webpackJsonp([0],[
 	}(_react.Component);
 
 	var Header = exports.Header = (0, _reactRedux.connect)(function (state) {
-		state.header.common = state.common;
-		return state.header;
+		return _extends({}, state.header, state.common);
 	}, function (dispatch, ownProps) {
 		return {
 			remindClickEvent: function remindClickEvent(value) {
@@ -17262,7 +17263,7 @@ webpackJsonp([0],[
 				console.log("header admin click event", value);
 				switch (value) {
 					case "3":
-						dispatch((0, _actions.logoutFetch)('/common'));
+						dispatch((0, _actions.logoutFetch)({ a: 1 }, '/common'));
 						break;
 					default:
 
@@ -17562,13 +17563,13 @@ webpackJsonp([0],[
 	};
 
 	//发起POST请求
-	var requestPosts = exports.requestPosts = makeActionCreator(_constants.REQUESTPOST, "payload", "path", "error");
+	var requestPosts = exports.requestPosts = makeActionCreator(_constants.REQUESTPOST, "payload", "error");
 	//接收POST请求
-	var receivePosts = exports.receivePosts = makeActionCreator(_constants.RECEIVEPOST, "payload", "path", "error");
+	var receivePosts = exports.receivePosts = makeActionCreator(_constants.RECEIVEPOST, "payload", "error");
 	//发起GET请求
-	var requestGets = exports.requestGets = makeActionCreator(_constants.REQUESTGET, "payload", "path", "error");
+	var requestGets = exports.requestGets = makeActionCreator(_constants.REQUESTGET, "payload", "error");
 	//接收GET请求
-	var receiveGets = exports.receiveGets = makeActionCreator(_constants.RECEIVEGET, "payload", "path", "error");
+	var receiveGets = exports.receiveGets = makeActionCreator(_constants.RECEIVEGET, "payload", "error");
 
 	//异步Action函数创建器 POST请求
 	var makePostActionCreator = function makePostActionCreator(type, url) {
@@ -17653,6 +17654,10 @@ webpackJsonp([0],[
 	        }
 
 	        return function (dispatch, getState) {
+	            var _console;
+
+	            (_console = console).log.apply(_console, ["ARGS:"].concat(args));
+
 	            var _ref2 = [].concat(args),
 	                body = _ref2[0],
 	                path = _ref2[1],
@@ -17702,7 +17707,7 @@ webpackJsonp([0],[
 
 	            //获取并处理请求结果
 	            .then(function (json) {
-	                console.log("then json");
+	                console.log("this path:", path);
 	                return dispatch({
 	                    type: type,
 	                    path: path,
@@ -17726,7 +17731,9 @@ webpackJsonp([0],[
 	//发送登录请求
 	var loginFetch = exports.loginFetch = makePostActionCreator(_constants.POST_LOGIN, '/api/admin/login', 'body', 'path', 'error');
 	//退出登录
-	var logoutFetch = exports.logoutFetch = makeGetActionCreator(_constants.POST_LOGIN, '/api/admin/logout', 'path', 'error');
+	var logoutFetch = exports.logoutFetch = makeGetActionCreator(_constants.GET_LOGOUT, '/api/admin/logout', 'body', 'path', 'error');
+
+	console.log("LF:", logoutFetch);
 
 	//获取认证信息
 	var authInfo = exports.authInfo = makeGetActionCreator(_constants.GET_AUTH_INFO, '/api/authinfo', 'path', 'error');
@@ -18005,12 +18012,18 @@ webpackJsonp([0],[
 				    logo = _props.logo,
 				    logoname = _props.logoname,
 				    logined = _props.logined,
+				    renew_csrf_token = _props.renew_csrf_token,
 				    version = _props.version,
 				    error = _props.error,
 				    message = _props.message,
 				    onSubmit = _props.onSubmit,
 				    _onKeyPress = _props.onKeyPress;
 
+				//重载以获取新的csrf_token
+
+				if (renew_csrf_token === 1) {
+					window.location.reload(true);
+				}
 
 				var emailInput = void 0,
 				    passwordInput = void 0;
@@ -18028,7 +18041,7 @@ webpackJsonp([0],[
 								} },
 							_react2.default.createElement('img', { src: logo, alt: logoname })
 						),
-						error === 0 ? null : _react2.default.createElement(
+						error === 0 || error === 1 ? null : _react2.default.createElement(
 							'p',
 							{ className: 'error-message' },
 							message

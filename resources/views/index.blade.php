@@ -31,7 +31,6 @@
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
         ]) !!};
-        console.log('arr:',[1,2].push(3));
     </script>
 
 </head>
