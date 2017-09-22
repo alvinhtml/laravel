@@ -130,6 +130,11 @@ class AuthController extends Controller
     }
 
     /**
+     * 判断是否登录
+     * @return [type] [description]
+     */
+
+    /**
      * Validate the user login request.
      *
      * @param  \Illuminate\Http\Request  $request

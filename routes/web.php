@@ -13,13 +13,8 @@
 
 
 
-Route::get('/', function () {
-    return view('index');
-});
-
-Route::get('/{urls}', function () {
-    return view('index');
-})->where('urls','(?!api/).+');
+Route::get('/', 'HomeController@index');
+Route::get('/{urls}', 'HomeController@index')->where('urls','(?!api/).+');
 
 Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
 

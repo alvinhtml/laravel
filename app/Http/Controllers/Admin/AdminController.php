@@ -33,7 +33,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -70,6 +70,7 @@ class AdminController extends Controller
      */
     public function showAdminList(Admin $admin, Request $request)
     {
+        $limit_num = $request->input('limit') || 1;
         $datalist = $admin->limit(3)->get();
 
         //dd($datalist);
@@ -80,8 +81,7 @@ class AdminController extends Controller
         $results['count'] = $datalist->count();
         $results['page'] = $request->input('page') || 1;
 
-        dd($results);
-
+        return response()->json($results);
     }
 
     /**

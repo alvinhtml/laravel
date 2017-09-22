@@ -38,7 +38,7 @@
     <div id="webApplication"></div>
 
     <!-- JavaScript -->
-    <script type="text/javascript" src="/public/js/init.js"></script>
+    <script type="text/javascript" src="/public/js/init.min.js"></script>
     <script type="text/javascript" src="/public/js/bundle.js"></script>
 </body>
 </html>
