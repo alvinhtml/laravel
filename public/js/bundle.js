@@ -6777,7 +6777,7 @@ console.log("reducer:", _index2.default);
 //给增强后的store传入reducer
 var store = (0, _configureStore2.default)(_index2.default);
 
-console.log("state", store.getState());
+console.log("state", store);
 
 (0, _reactDom.render)(_react2.default.createElement(
     _reactRedux.Provider,
@@ -6789,6 +6789,17 @@ console.log("state", store.getState());
         _react2.default.createElement(_DevTools2.default, null)
     )
 ), document.getElementById('webApplication'));
+
+//body事件
+document.addEventListener('mousedown', function (e) {
+    console.log(44);
+    store.dispatch({
+        type: 'MOUSEDOWN',
+        payload: {
+            mousedown: 2
+        }
+    });
+});
 
 /***/ }),
 /* 412 */
@@ -19314,59 +19325,61 @@ var adminlistInitialState = {
 
     //列表配置
     configs: {
-        tbname: 'admins',
-        limit: 20, //单页显示条数
+        tableName: 'admins',
+        limit: 6, //单页显示条数
         searchMode: '精确搜索', //搜索模式
+        selectAll: true,
+        actions: [],
         column: [{
-            name: 'index',
+            key: 'index',
             title: '序号',
-            order: false,
+            order: 'order',
             visibility: true,
-            width: 200,
+            width: 60,
             resize: 0
         }, {
-            name: 'name',
+            key: 'name',
             title: '名称',
-            order: false,
+            order: 'order',
             visibility: true,
             width: 200,
-            resize: 0
+            resize: 1
         }, {
-            name: 'email',
+            key: 'email',
             title: '邮箱',
-            order: false,
+            order: 'order',
             visibility: true,
             width: 200,
-            resize: 0
+            resize: 1
         }, {
-            name: 'type',
+            key: 'type',
             title: '类型',
-            order: false,
+            order: 'order',
             visibility: false,
-            width: 200,
+            width: 120,
             resize: 0
         }, {
-            name: 'ouname',
+            key: 'ouname',
             title: '部门',
-            order: false,
+            order: 'order',
             visibility: true,
             width: 200,
             resize: 0
         }, {
-            name: 'ip',
+            key: 'ip',
             title: '可登录IP',
             order: false,
             visibility: true,
             width: 0
         }, {
-            name: 'state',
+            key: 'state',
             title: '状态',
-            order: false,
+            order: 'order',
             visibility: false,
             width: 200,
             resize: 0
         }, {
-            name: 'desp',
+            key: 'desp',
             title: '描述',
             order: false,
             visibility: true,
@@ -19384,6 +19397,8 @@ function adminlist() {
     //根据不同的action type进行state的更新
     switch (action.type) {
         case _constants.GET_ADMIN_LIST:
+            return _extends({}, state, action.payload);
+        case "MOUSEDOWN":
             return _extends({}, state, action.payload);
         default:
             return _extends({}, state);
@@ -25732,7 +25747,7 @@ var AdminListUI = function (_Component) {
 							'table',
 							{ className: 'olist-table', id: 'olist_table' },
 							_react2.default.createElement(_common.ListHeader, { orderbyEvent: orderbyEvent, column: configs.column }),
-							_react2.default.createElement('tbody', { id: 'listTbody', className: 'olist-body' })
+							_react2.default.createElement(_common.ListBody, { list: list, column: configs.column })
 						)
 					),
 					_react2.default.createElement(_common.PageList, { getList: getList, count: parseInt(count), limit: parseInt(configs.limit), page: parseInt(page) })
@@ -25828,7 +25843,7 @@ var AdminForm = exports.AdminForm = (0, _reactRedux.connect)(function (state) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ListBodyer = exports.ListHeader = exports.ListConfiger = exports.ListSearcher = exports.ListActioner = exports.PageList = exports.Pagebar = undefined;
+exports.ListBody = exports.ListHeader = exports.ListConfiger = exports.ListSearcher = exports.ListActioner = exports.PageList = exports.Pagebar = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -26308,41 +26323,57 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
 var ListHeader = exports.ListHeader = function (_Component6) {
 	_inherits(ListHeader, _Component6);
 
-	function ListHeader() {
+	function ListHeader(props) {
 		_classCallCheck(this, ListHeader);
 
-		return _possibleConstructorReturn(this, (ListHeader.__proto__ || Object.getPrototypeOf(ListHeader)).apply(this, arguments));
+		//ES6 类中函数必须手动绑定
+		var _this8 = _possibleConstructorReturn(this, (ListHeader.__proto__ || Object.getPrototypeOf(ListHeader)).call(this, props));
+
+		_this8.onMouseDown = _this8.onMouseDown.bind(_this8);
+		return _this8;
 	}
 
 	_createClass(ListHeader, [{
+		key: 'onMouseDown',
+		value: function onMouseDown() {
+			window.resize = true;
+		}
+	}, {
 		key: 'render',
 		value: function render() {
-			console.log("ListHeader", this.props);
+			var _this9 = this;
+
 			var _props5 = this.props,
 			    column = _props5.column,
 			    orderbyEvent = _props5.orderbyEvent;
 
 
 			var columns = column.map(function (v, i) {
-				var resizer = v.resize ? _react2.default.createElement('span', { className: 'resize' }) : '';
+				var resize = v.resize ? _react2.default.createElement('span', { onMouseDown: _this9.onMouseDown, className: 'resize' }) : '';
 				return _react2.default.createElement(
 					'th',
 					{
-						key: i,
+						key: v.key,
 						className: v.order ? v.order : '',
 						onClick: orderbyEvent,
 						'data-order': v.order,
-						'data-val': v.name,
-						style: v.width ? 'width:' + v.width + 'px' : ''
+						'data-val': v.key,
+						style: {
+							width: v.width ? v.width + 'px' : 'auto'
+						}
 					},
-					v.title,
-					resizer
+					_react2.default.createElement(
+						'strong',
+						null,
+						v.title
+					),
+					resize
 				);
 			});
 
 			return _react2.default.createElement(
 				'thead',
-				{ id: 'listThead' },
+				{ id: 'list_head' },
 				_react2.default.createElement(
 					'tr',
 					null,
@@ -26355,47 +26386,69 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 	return ListHeader;
 }(_react.Component);
 
-var ListBodyer = exports.ListBodyer = function (_Component7) {
-	_inherits(ListBodyer, _Component7);
+var ListBody = exports.ListBody = function (_Component7) {
+	_inherits(ListBody, _Component7);
 
-	function ListBodyer() {
-		_classCallCheck(this, ListBodyer);
+	function ListBody() {
+		_classCallCheck(this, ListBody);
 
-		return _possibleConstructorReturn(this, (ListBodyer.__proto__ || Object.getPrototypeOf(ListBodyer)).apply(this, arguments));
+		return _possibleConstructorReturn(this, (ListBody.__proto__ || Object.getPrototypeOf(ListBody)).apply(this, arguments));
 	}
 
-	_createClass(ListBodyer, [{
+	_createClass(ListBody, [{
 		key: 'render',
 		value: function render() {
-			var list = this.props.list;
+			var _props6 = this.props,
+			    list = _props6.list,
+			    column = _props6.column;
 
 
-			var lines = function lines(line) {
+			var lines = function lines(line, key) {
 
 				var columns = column.map(function (v, i) {
-					return _react2.default.createElement(
-						'td',
-						{ key: i },
-						line[v.name]
-					);
+					if (v.key === "index") {
+						return _react2.default.createElement(
+							'td',
+							{ key: v.key },
+							_react2.default.createElement(
+								'div',
+								{ className: 'td-cell' },
+								i
+							)
+						);
+					} else {
+						return _react2.default.createElement(
+							'td',
+							{ key: v.key },
+							_react2.default.createElement(
+								'div',
+								{ className: 'td-cell' },
+								line[v.key]
+							)
+						);
+					}
 				});
 
 				return _react2.default.createElement(
 					'tr',
-					null,
+					{ key: key },
 					columns
 				);
 			};
 
 			var lists = list.map(function (v, i) {
-				return lines(v);
+				return lines(v, i);
 			});
 
-			return _react2.default.createElement('thead', { id: 'listThead' });
+			return _react2.default.createElement(
+				'tbody',
+				{ id: 'list_body', className: 'olist-body' },
+				lists
+			);
 		}
 	}]);
 
-	return ListBodyer;
+	return ListBody;
 }(_react.Component);
 
 /***/ }),
