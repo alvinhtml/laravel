@@ -70,16 +70,15 @@ class AdminController extends Controller
      */
     public function showAdminList(Admin $admin, Request $request)
     {
-        $limit_num = $request->input('limit') || 1;
-        $datalist = $admin->limit(3)->get();
-
-        //dd($datalist);
+        $limit_num = $request->input('limit',20);
+        $datalist = $admin->limit($limit_num)->get();
 
         $results = Error::make(0);
 
         $results['list'] = $datalist->toArray();
-        $results['count'] = $datalist->count();
-        $results['page'] = $request->input('page') || 1;
+        //$results['count'] = $datalist->count();
+        $results['count'] = $admin->count();
+        $results['page'] = $request->input('page', 1);
 
         return response()->json($results);
     }

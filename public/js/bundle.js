@@ -357,7 +357,7 @@ module.exports = function(it, key){
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(55),
+var Symbol = __webpack_require__(56),
     getRawTag = __webpack_require__(424),
     objectToString = __webpack_require__(425);
 
@@ -392,7 +392,7 @@ module.exports = baseGetTag;
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP         = __webpack_require__(27)
-  , createDesc = __webpack_require__(58);
+  , createDesc = __webpack_require__(59);
 module.exports = __webpack_require__(35) ? function(object, key, value){
   return dP.f(object, key, createDesc(1, value));
 } : function(object, key, value){
@@ -445,92 +445,7 @@ module.exports = Object.keys || function keys(O){
 module.exports = { "default": __webpack_require__(595), __esModule: true };
 
 /***/ }),
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var root = __webpack_require__(22);
-
-/** Built-in value references. */
-var Symbol = root.Symbol;
-
-module.exports = Symbol;
-
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports['default'] = shouldPureComponentUpdate;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _shallowEqual = __webpack_require__(517);
-
-var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
-
-function shouldPureComponentUpdate(nextProps, nextState) {
-  return !(0, _shallowEqual2['default'])(this.props, nextProps) || !(0, _shallowEqual2['default'])(this.state, nextState);
-}
-
-module.exports = exports['default'];
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-exports.default = function (obj, keys) {
-  var target = {};
-
-  for (var i in obj) {
-    if (keys.indexOf(i) >= 0) continue;
-    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
-    target[i] = obj[i];
-  }
-
-  return target;
-};
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports) {
-
-module.exports = function(bitmap, value){
-  return {
-    enumerable  : !(bitmap & 1),
-    configurable: !(bitmap & 2),
-    writable    : !(bitmap & 4),
-    value       : value
-  };
-};
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.1.13 ToObject(argument)
-var defined = __webpack_require__(126);
-module.exports = function(it){
-  return Object(defined(it));
-};
-
-/***/ }),
-/* 60 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -563,9 +478,101 @@ var GET_AUTH_INFO = exports.GET_AUTH_INFO = 'GET_AUTH_INFO';
 var POST_LOGIN = exports.POST_LOGIN = 'POST_LOGIN';
 var GET_LOGOUT = exports.GET_LOGOUT = 'GET_LOGOUT';
 
+//list config
+var CHANGE_COLUMN = exports.CHANGE_COLUMN = 'CHANGE_COLUMN';
+
 //admin list
 var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
 var SET_ADMIN_CONFIG = exports.SET_ADMIN_CONFIG = 'SET_ADMIN_CONFIG';
+
+//drag
+var RESIZE_TH_WIDTH = exports.RESIZE_TH_WIDTH = 'RESIZE_TH_WIDTH';
+var RESIZE_TH_ING = exports.RESIZE_TH_ING = 'RESIZE_TH_WIDTH';
+
+/***/ }),
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var root = __webpack_require__(22);
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+module.exports = Symbol;
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports['default'] = shouldPureComponentUpdate;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _shallowEqual = __webpack_require__(517);
+
+var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
+
+function shouldPureComponentUpdate(nextProps, nextState) {
+  return !(0, _shallowEqual2['default'])(this.props, nextProps) || !(0, _shallowEqual2['default'])(this.state, nextState);
+}
+
+module.exports = exports['default'];
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+exports.default = function (obj, keys) {
+  var target = {};
+
+  for (var i in obj) {
+    if (keys.indexOf(i) >= 0) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+    target[i] = obj[i];
+  }
+
+  return target;
+};
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports) {
+
+module.exports = function(bitmap, value){
+  return {
+    enumerable  : !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable    : !(bitmap & 4),
+    value       : value
+  };
+};
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.13 ToObject(argument)
+var defined = __webpack_require__(126);
+module.exports = function(it){
+  return Object(defined(it));
+};
 
 /***/ }),
 /* 61 */
@@ -1121,7 +1128,7 @@ var locationsAreEqual = function locationsAreEqual(a, b) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getAdminList = exports.authInfo = exports.logoutFetch = exports.loginFetch = exports.receiveGets = exports.requestGets = exports.receivePosts = exports.requestPosts = undefined;
+exports.getAdminList = exports.authInfo = exports.logoutFetch = exports.loginFetch = exports.ActionCreator = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入isomorphic-fetch API来进行Ajax
 
@@ -1133,7 +1140,7 @@ var _isomorphicFetch = __webpack_require__(201);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
-var _constants = __webpack_require__(60);
+var _constants = __webpack_require__(48);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1150,45 +1157,24 @@ function formatParams(data) {
     return arr.join("&");
 }
 
-/**
- * Action Creators 生成器
- * @param  {[type]} type     action.type
- * @param  {[type]} argNames action argument
- * @return {[type]}          action creator
- */
-var makeActionCreator = function makeActionCreator(type) {
-    for (var _len = arguments.length, argNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        argNames[_key - 1] = arguments[_key];
-    }
-
-    return function () {
-        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-        }
-
-        var action = { type: type };
-        argNames.forEach(function (arg, index) {
-            action[argNames[index]] = args[index];
+//Action Creators 生成器
+var ActionCreator = exports.ActionCreator = function ActionCreator(type, body, path) {
+    //因为使用了 redux-thunk 中间件, action 创建函数应当反回一个函数 (dispatch,getState) => {}
+    return function (dispatch, getState) {
+        dispatch({
+            type: type,
+            payload: body,
+            path: path
         });
-        return action;
     };
 };
-
-//发起POST请求
-var requestPosts = exports.requestPosts = makeActionCreator(_constants.REQUESTPOST, "payload", "error");
-//接收POST请求
-var receivePosts = exports.receivePosts = makeActionCreator(_constants.RECEIVEPOST, "payload", "error");
-//发起GET请求
-var requestGets = exports.requestGets = makeActionCreator(_constants.REQUESTGET, "payload", "error");
-//接收GET请求
-var receiveGets = exports.receiveGets = makeActionCreator(_constants.RECEIVEGET, "payload", "error");
 
 //异步Action函数创建器 POST请求
 var makePostActionCreator = function makePostActionCreator(type, url) {
 
     return function () {
-        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-            args[_key3] = arguments[_key3];
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
         }
 
         return function (dispatch, getState) {
@@ -1261,8 +1247,8 @@ var makePostActionCreator = function makePostActionCreator(type, url) {
 var makeGetActionCreator = function makeGetActionCreator(type, url) {
 
     return function () {
-        for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-            args[_key4] = arguments[_key4];
+        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
         }
 
         return function (dispatch, getState) {
@@ -2055,7 +2041,7 @@ exports.f = Object.getOwnPropertySymbols;
 /***/ (function(module, exports, __webpack_require__) {
 
 var pIE            = __webpack_require__(80)
-  , createDesc     = __webpack_require__(58)
+  , createDesc     = __webpack_require__(59)
   , toIObject      = __webpack_require__(28)
   , toPrimitive    = __webpack_require__(129)
   , has            = __webpack_require__(36)
@@ -4709,7 +4695,7 @@ function startConsecutiveToggle(id) {
 exports.__esModule = true;
 exports['default'] = undefined;
 
-var _objectWithoutProperties2 = __webpack_require__(57);
+var _objectWithoutProperties2 = __webpack_require__(58);
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
@@ -5076,7 +5062,7 @@ module.exports = function(it){
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has         = __webpack_require__(36)
-  , toObject    = __webpack_require__(59)
+  , toObject    = __webpack_require__(60)
   , IE_PROTO    = __webpack_require__(132)('IE_PROTO')
   , ObjectProto = Object.prototype;
 
@@ -5138,7 +5124,7 @@ var _extends2 = __webpack_require__(15);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _objectWithoutProperties2 = __webpack_require__(57);
+var _objectWithoutProperties2 = __webpack_require__(58);
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
@@ -6367,7 +6353,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(52);
+var _reactRouter = __webpack_require__(53);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6762,6 +6748,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import './less/miniui.less'
 // import './css/style.css'
 
+
 //引入store配置
 console.log("reducer:", _index2.default);
 
@@ -6790,15 +6777,44 @@ console.log("state", store);
     )
 ), document.getElementById('webApplication'));
 
-//body事件
-document.addEventListener('mousedown', function (e) {
-    console.log(44);
-    store.dispatch({
-        type: 'MOUSEDOWN',
-        payload: {
-            mousedown: 2
+//document mousemove 事件
+document.addEventListener('mousemove', function (e) {
+
+    //表头宽度调整
+    if (window.resize) {
+        var _window$resize = window.resize,
+            column = _window$resize.column,
+            element = _window$resize.element,
+            pageX = _window$resize.pageX,
+            width = _window$resize.width,
+            key = _window$resize.key,
+            listPath = _window$resize.listPath;
+
+        if (width + e.pageX - pageX > 60) {
+            element.style.width = width + e.pageX - pageX + 'px';
         }
-    });
+    }
+});
+
+document.addEventListener('mouseup', function (e) {
+
+    //结束表头宽度调整, 并把调整后的宽 dispatch 到 store
+    if (window.resize) {
+        var _window$resize2 = window.resize,
+            column = _window$resize2.column,
+            element = _window$resize2.element,
+            key = _window$resize2.key,
+            listPath = _window$resize2.listPath;
+
+        column[key].width = element.offsetWidth;
+        store.dispatch({
+            type: listPath + "_resize_th",
+            payload: {
+                column: column
+            }
+        });
+        window.resize = undefined;
+    }
 });
 
 /***/ }),
@@ -6812,7 +6828,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _redux = __webpack_require__(53);
+var _redux = __webpack_require__(54);
 
 var _reduxThunk = __webpack_require__(200);
 
@@ -7978,7 +7994,7 @@ module.exports = baseIsNative;
 /* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(55);
+var Symbol = __webpack_require__(56);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -8636,7 +8652,7 @@ module.exports = strictIndexOf;
 /* 449 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(55),
+var Symbol = __webpack_require__(56),
     isArguments = __webpack_require__(117),
     isArray = __webpack_require__(23);
 
@@ -10009,7 +10025,7 @@ module.exports = arraySome;
 /* 487 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(55),
+var Symbol = __webpack_require__(56),
     Uint8Array = __webpack_require__(488),
     eq = __webpack_require__(208),
     equalArrays = __webpack_require__(226),
@@ -10792,7 +10808,7 @@ module.exports = toString;
 /* 507 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(55),
+var Symbol = __webpack_require__(56),
     arrayMap = __webpack_require__(211),
     isArray = __webpack_require__(23),
     isSymbol = __webpack_require__(122);
@@ -11135,7 +11151,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _function = __webpack_require__(56);
+var _function = __webpack_require__(57);
 
 var _function2 = _interopRequireDefault(_function);
 
@@ -12657,7 +12673,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _function = __webpack_require__(56);
+var _function = __webpack_require__(57);
 
 var _function2 = _interopRequireDefault(_function);
 
@@ -12796,7 +12812,7 @@ var _brighten = __webpack_require__(560);
 
 var _brighten2 = _interopRequireDefault(_brighten);
 
-var _function = __webpack_require__(56);
+var _function = __webpack_require__(57);
 
 var _function2 = _interopRequireDefault(_function);
 
@@ -12951,7 +12967,7 @@ var _LogMonitorEntry = __webpack_require__(562);
 
 var _LogMonitorEntry2 = _interopRequireDefault(_LogMonitorEntry);
 
-var _function = __webpack_require__(56);
+var _function = __webpack_require__(57);
 
 var _function2 = _interopRequireDefault(_function);
 
@@ -13076,7 +13092,7 @@ var _LogMonitorEntryAction = __webpack_require__(627);
 
 var _LogMonitorEntryAction2 = _interopRequireDefault(_LogMonitorEntryAction);
 
-var _function = __webpack_require__(56);
+var _function = __webpack_require__(57);
 
 var _function2 = _interopRequireDefault(_function);
 
@@ -13313,7 +13329,7 @@ module.exports = function(it){
 "use strict";
 
 var create         = __webpack_require__(130)
-  , descriptor     = __webpack_require__(58)
+  , descriptor     = __webpack_require__(59)
   , setToStringTag = __webpack_require__(135)
   , IteratorPrototype = {};
 
@@ -13483,7 +13499,7 @@ var global         = __webpack_require__(26)
   , anObject       = __webpack_require__(34)
   , toIObject      = __webpack_require__(28)
   , toPrimitive    = __webpack_require__(129)
-  , createDesc     = __webpack_require__(58)
+  , createDesc     = __webpack_require__(59)
   , _create        = __webpack_require__(130)
   , gOPNExt        = __webpack_require__(243)
   , $GOPD          = __webpack_require__(140)
@@ -13926,7 +13942,7 @@ $export($export.S + $export.F, 'Object', {assign: __webpack_require__(594)});
 var getKeys  = __webpack_require__(46)
   , gOPS     = __webpack_require__(139)
   , pIE      = __webpack_require__(80)
-  , toObject = __webpack_require__(59)
+  , toObject = __webpack_require__(60)
   , IObject  = __webpack_require__(240)
   , $assign  = Object.assign;
 
@@ -13967,7 +13983,7 @@ module.exports = __webpack_require__(9).Object.keys;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(59)
+var toObject = __webpack_require__(60)
   , $keys    = __webpack_require__(46);
 
 __webpack_require__(82)('keys', function(){
@@ -14015,7 +14031,7 @@ var _extends2 = __webpack_require__(15);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _objectWithoutProperties2 = __webpack_require__(57);
+var _objectWithoutProperties2 = __webpack_require__(58);
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
@@ -14371,7 +14387,7 @@ var _extends2 = __webpack_require__(15);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _objectWithoutProperties2 = __webpack_require__(57);
+var _objectWithoutProperties2 = __webpack_require__(58);
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
@@ -14423,7 +14439,7 @@ var _extends2 = __webpack_require__(15);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _objectWithoutProperties2 = __webpack_require__(57);
+var _objectWithoutProperties2 = __webpack_require__(58);
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
@@ -18119,7 +18135,7 @@ module.exports = __webpack_require__(9).Object.getPrototypeOf;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject        = __webpack_require__(59)
+var toObject        = __webpack_require__(60)
   , $getPrototypeOf = __webpack_require__(242);
 
 __webpack_require__(82)('getPrototypeOf', function(){
@@ -18282,7 +18298,7 @@ module.exports = __webpack_require__(9).Array.from;
 
 var ctx            = __webpack_require__(128)
   , $export        = __webpack_require__(24)
-  , toObject       = __webpack_require__(59)
+  , toObject       = __webpack_require__(60)
   , call           = __webpack_require__(652)
   , isArrayIter    = __webpack_require__(653)
   , toLength       = __webpack_require__(241)
@@ -18355,7 +18371,7 @@ module.exports = function(it){
 "use strict";
 
 var $defineProperty = __webpack_require__(27)
-  , createDesc      = __webpack_require__(58);
+  , createDesc      = __webpack_require__(59);
 
 module.exports = function(object, index, value){
   if(index in object)$defineProperty.f(object, index, createDesc(0, value));
@@ -19088,7 +19104,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _redux = __webpack_require__(53);
+var _redux = __webpack_require__(54);
 
 var _reactRouterRedux = __webpack_require__(197);
 
@@ -19132,7 +19148,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.common = common;
 
-var _constants = __webpack_require__(60);
+var _constants = __webpack_require__(48);
 
 //初始化状态
 var commonInitialState = {
@@ -19159,6 +19175,8 @@ function common() {
             return _extends({}, state, action.payload);
         case _constants.GET_AUTH_INFO:
             return _extends({}, state, action.payload);
+        case _constants.RESIZE_TH_WIDTH:
+            return _extends({}, state, action.payload);
         default:
             return _extends({}, state);
     }
@@ -19180,7 +19198,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.header = header;
 
-var _constants = __webpack_require__(60);
+var _constants = __webpack_require__(48);
 
 //初始化状态
 var headerInitialState = {
@@ -19259,7 +19277,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.list = list;
 
-var _constants = __webpack_require__(60);
+var _constants = __webpack_require__(48);
 
 //初始化状态
 var initialListState = {
@@ -19302,7 +19320,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.adminlist = adminlist;
 
-var _constants = __webpack_require__(60);
+var _constants = __webpack_require__(48);
 
 //初始化状态
 var adminlistInitialState = {
@@ -19325,8 +19343,8 @@ var adminlistInitialState = {
 
     //列表配置
     configs: {
-        tableName: 'admins',
-        limit: 6, //单页显示条数
+        listPath: 'adminlist',
+        limit: 20, //单页显示条数
         searchMode: '精确搜索', //搜索模式
         selectAll: true,
         actions: [],
@@ -19348,7 +19366,7 @@ var adminlistInitialState = {
             key: 'email',
             title: '邮箱',
             order: 'order',
-            visibility: true,
+            visibility: false,
             width: 200,
             resize: 1
         }, {
@@ -19362,14 +19380,14 @@ var adminlistInitialState = {
             key: 'ouname',
             title: '部门',
             order: 'order',
-            visibility: true,
+            visibility: false,
             width: 200,
             resize: 0
         }, {
             key: 'ip',
             title: '可登录IP',
             order: false,
-            visibility: true,
+            visibility: false,
             width: 0
         }, {
             key: 'state',
@@ -19394,12 +19412,18 @@ function adminlist() {
     var action = arguments[1];
 
 
+    var configs = void 0;
+
     //根据不同的action type进行state的更新
     switch (action.type) {
         case _constants.GET_ADMIN_LIST:
             return _extends({}, state, action.payload);
-        case "MOUSEDOWN":
-            return _extends({}, state, action.payload);
+        case 'adminlist_resize_th':
+            configs = _extends({}, state.configs, action.payload);
+            return _extends({}, state, { configs: configs });
+        case _constants.CHANGE_COLUMN:
+            configs = _extends({}, state.configs, action.payload);
+            return _extends({}, state, { configs: configs });
         default:
             return _extends({}, state);
     }
@@ -19550,6 +19574,7 @@ var App = (0, _reactRedux.connect)(function (state) {
 
 exports.default = App;
 
+// <meta http-equiv="refresh" content="0;url=http://www.baidu.com">
 // <div className="manage">
 //     <Header />
 //     <Sidebar />
@@ -24244,9 +24269,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(52);
+var _reactRouter = __webpack_require__(53);
 
-var _redux = __webpack_require__(53);
+var _redux = __webpack_require__(54);
 
 var _reactRedux = __webpack_require__(21);
 
@@ -24385,9 +24410,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(52);
+var _reactRouter = __webpack_require__(53);
 
-var _redux = __webpack_require__(53);
+var _redux = __webpack_require__(54);
 
 var _reactRedux = __webpack_require__(21);
 
@@ -25638,6 +25663,8 @@ var _dropdown = __webpack_require__(265);
 
 var _common = __webpack_require__(712);
 
+var _constants = __webpack_require__(48);
+
 var _actions = __webpack_require__(85);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -25652,6 +25679,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 //引入组件
+
+
+//引入action类型常量名
 
 
 //引入Action创建函数
@@ -25682,13 +25712,15 @@ var AdminListUI = function (_Component) {
 			    list = _props.list,
 			    count = _props.count,
 			    configs = _props.configs,
-			    page = _props.page,
-			    getList = _props.getList,
-			    toolsClickEvent = _props.toolsClickEvent,
-			    setSearchMode = _props.setSearchMode,
-			    changeLimitEvent = _props.changeLimitEvent,
-			    changeColumnEvent = _props.changeColumnEvent,
-			    orderbyEvent = _props.orderbyEvent;
+			    page = _props.page;
+			var _props2 = this.props,
+			    resizeThEvent = _props2.resizeThEvent,
+			    getList = _props2.getList,
+			    toolsClickEvent = _props2.toolsClickEvent,
+			    setSearchMode = _props2.setSearchMode,
+			    changeLimitEvent = _props2.changeLimitEvent,
+			    changeColumnEvent = _props2.changeColumnEvent,
+			    orderbyEvent = _props2.orderbyEvent;
 
 			return _react2.default.createElement(
 				'div',
@@ -25746,7 +25778,7 @@ var AdminListUI = function (_Component) {
 						_react2.default.createElement(
 							'table',
 							{ className: 'olist-table', id: 'olist_table' },
-							_react2.default.createElement(_common.ListHeader, { orderbyEvent: orderbyEvent, column: configs.column }),
+							_react2.default.createElement(_common.ListHeader, { orderbyEvent: orderbyEvent, resizeThEvent: resizeThEvent, configs: configs }),
 							_react2.default.createElement(_common.ListBody, { list: list, column: configs.column })
 						)
 					),
@@ -25802,6 +25834,17 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 	return state.adminlist;
 }, function (dispatch, ownProps) {
 	return {
+		resizeThEvent: function resizeThEvent(e, configs) {
+			console.log(_actions.ActionCreator);
+			dispatch((0, _actions.ActionCreator)(_constants.RESIZE_TH_WIDTH, {
+				resizeing: true,
+				resize_column: configs.column,
+				resize_path: configs.listPath,
+				resize_key: e.currentTarget.getAttribute("data-key"),
+				resize_clientX: e.clientX
+			}, '/common'));
+			e.stopPropagation();
+		},
 		getList: function getList(o) {
 			dispatch((0, _actions.getAdminList)(o, '/adminlist'));
 		},
@@ -25817,8 +25860,14 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 		changeLimitEvent: function changeLimitEvent(v) {
 			//
 		},
-		changeColumnEvent: function changeColumnEvent(v) {
-			//
+		changeColumnEvent: function changeColumnEvent(key, column) {
+			//let column = [...column_arr]
+
+			column[key].visibility = column[key].visibility ? false : true;
+
+			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_COLUMN, {
+				column: column
+			}, '/common'));
 		}
 	};
 })(AdminListUI);
@@ -25851,7 +25900,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(52);
+var _reactRouter = __webpack_require__(53);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26265,8 +26314,8 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
 				return _react2.default.createElement(
 					'span',
 					{ key: i, onClick: function onClick(e) {
-							return changeColumnEvent(e.currentTarget.getAttribute("data-id"));
-						}, className: v.visibility ? 'active' : '', 'data-id': v.name },
+							return changeColumnEvent(i, column);
+						}, className: v.visibility ? 'active' : '' },
 					v.title
 				);
 			});
@@ -26326,17 +26375,29 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 	function ListHeader(props) {
 		_classCallCheck(this, ListHeader);
 
-		//ES6 类中函数必须手动绑定
+		//设置 initial state
 		var _this8 = _possibleConstructorReturn(this, (ListHeader.__proto__ || Object.getPrototypeOf(ListHeader)).call(this, props));
 
-		_this8.onMouseDown = _this8.onMouseDown.bind(_this8);
+		_this8.state = {
+			opened: false
+		};
+
+		//ES6 类中函数必须手动绑定
+		_this8.onmousedown = _this8.onmousedown.bind(_this8);
 		return _this8;
 	}
 
 	_createClass(ListHeader, [{
-		key: 'onMouseDown',
-		value: function onMouseDown() {
-			window.resize = true;
+		key: 'onmousedown',
+		value: function onmousedown(e, element, key, listPath) {
+			window.resize = {
+				column: this.props.configs.column,
+				pageX: e.pageX,
+				width: element.offsetWidth,
+				element: element,
+				key: key,
+				listPath: listPath
+			};
 		}
 	}, {
 		key: 'render',
@@ -26344,22 +26405,29 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 			var _this9 = this;
 
 			var _props5 = this.props,
-			    column = _props5.column,
-			    orderbyEvent = _props5.orderbyEvent;
+			    orderbyEvent = _props5.orderbyEvent,
+			    resizeThEvent = _props5.resizeThEvent;
+			var _props$configs = this.props.configs,
+			    column = _props$configs.column,
+			    listPath = _props$configs.listPath;
 
 
 			var columns = column.map(function (v, i) {
-				var resize = v.resize ? _react2.default.createElement('span', { onMouseDown: _this9.onMouseDown, className: 'resize' }) : '';
+				var resize = v.resize ? _react2.default.createElement('span', { onMouseDown: function onMouseDown(e) {
+						_this9.onmousedown(e, _this9.refs['resize_' + v.key], i, listPath);
+					}, className: 'resize' }) : '';
 				return _react2.default.createElement(
 					'th',
 					{
+						ref: "resize_" + v.key,
 						key: v.key,
 						className: v.order ? v.order : '',
 						onClick: orderbyEvent,
 						'data-order': v.order,
 						'data-val': v.key,
 						style: {
-							width: v.width ? v.width + 'px' : 'auto'
+							width: v.width ? v.width + 'px' : 'auto',
+							display: v.visibility ? undefined : 'none'
 						}
 					},
 					_react2.default.createElement(
@@ -26417,9 +26485,15 @@ var ListBody = exports.ListBody = function (_Component7) {
 							)
 						);
 					} else {
+
 						return _react2.default.createElement(
 							'td',
-							{ key: v.key },
+							{
+								key: v.key,
+								style: {
+									display: v.visibility ? undefined : 'none'
+								}
+							},
 							_react2.default.createElement(
 								'div',
 								{ className: 'td-cell' },
