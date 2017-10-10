@@ -23,11 +23,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // if (Auth::guard('admin')->check()) {
-        //     return redirect('/home');
-        // } else {
-        //     return redirect('/login');
-        // }
         return view('index');
     }
 

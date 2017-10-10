@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Admin;
+use App\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Libraries\Error;
@@ -68,17 +69,30 @@ class AdminController extends Controller
      * @param  \App\Admin  $admin
      * @return \Illuminate\Http\Response
      */
-    public function showAdminList(Admin $admin, Request $request)
+    public function showAdminList(Admin $admin, Setting $setting, Request $request)
     {
+
+        $email = Auth::guard('admin')->user()->email;
+
+        //查询数据库中是否已经存了对应的配置
+        $settings = $setting::where('admin', $email)
+            ->where('name', 'adminlist')
+            ->get();
+        $results = Error::make(0);
+
+        if (!$settings->isEmpty()) {
+            $results['configs'] = json_decode($settings->first()['setting']);
+        }
+
         $limit_num = $request->input('limit',20);
         $datalist = $admin->limit($limit_num)->get();
 
-        $results = Error::make(0);
 
         $results['list'] = $datalist->toArray();
         //$results['count'] = $datalist->count();
         $results['count'] = $admin->count();
         $results['page'] = $request->input('page', 1);
+
 
         return response()->json($results);
     }

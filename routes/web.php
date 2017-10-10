@@ -13,6 +13,7 @@
 
 
 
+
 Route::get('/', 'HomeController@index');
 Route::get('/{urls}', 'HomeController@index')->where('urls','(?!api/).+');
 
@@ -41,6 +42,9 @@ Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
     //Route::auth();
 
 
+    Route::group(['prefix' => 'setting'], function () {
+        Route::post('list_configs', 'SettingController@list_configs');
+    });
 
 
 });
