@@ -78,20 +78,32 @@ class AdminController extends Controller
         $settings = $setting::where('admin', $email)
             ->where('name', 'adminlist')
             ->get();
+
+        $configs = json_decode($settings->first()['setting']);
+
+        $page = $request->input('page', isset($configs->page) ? $configs->page : 1);
+        $limit = $request->input('limit', isset($configs->limit) ? $configs->limit : 20);
+
+        //判断最大页数
+        $count = $admin->count();
+
+        $page = min($page, ceil($count / $limit));
+
+
+        $offset_num = $page==1 ? 0 : ($page - 1) * $limit;
+
         $results = Error::make(0);
 
         if (!$settings->isEmpty()) {
-            $results['configs'] = json_decode($settings->first()['setting']);
+            $configs->page = $page;
+            $configs->limit = $limit;
+            $results['configs'] = $configs;
         }
 
-        $limit_num = $request->input('limit',20);
-        $datalist = $admin->limit($limit_num)->get();
-
+        $datalist = $admin->offset($offset_num)->limit($limit)->get();
 
         $results['list'] = $datalist->toArray();
-        //$results['count'] = $datalist->count();
-        $results['count'] = $admin->count();
-        $results['page'] = $request->input('page', 1);
+        $results['count'] = $count;
 
 
         return response()->json($results);

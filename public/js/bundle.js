@@ -374,12 +374,6 @@ Object.defineProperty(exports, "__esModule", {
 var ERROR = exports.ERROR = 'ERROR';
 var SUCCESS = exports.SUCCESS = 'SUCCESS';
 
-//fetch
-var REQUESTPOST = exports.REQUESTPOST = 'REQUESTPOST';
-var RECEIVEPOST = exports.RECEIVEPOST = 'RECEIVEPOST';
-var REQUESTGET = exports.REQUESTGET = 'REQUESTGET';
-var RECEIVEGET = exports.RECEIVEGET = 'RECEIVEGET';
-
 //common
 var GET_AUTH_INFO = exports.GET_AUTH_INFO = 'GET_AUTH_INFO';
 
@@ -388,12 +382,10 @@ var POST_LOGIN = exports.POST_LOGIN = 'POST_LOGIN';
 var GET_LOGOUT = exports.GET_LOGOUT = 'GET_LOGOUT';
 
 //list config
-var CHANGE_COLUMN = exports.CHANGE_COLUMN = 'CHANGE_COLUMN';
 var UPDATE_LIST_CONFIGS = exports.UPDATE_LIST_CONFIGS = 'UPDATE_LIST_CONFIGS';
 
 //admin list
 var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
-var SET_ADMIN_CONFIG = exports.SET_ADMIN_CONFIG = 'SET_ADMIN_CONFIG';
 
 //drag
 var RESIZE_TH_WIDTH = exports.RESIZE_TH_WIDTH = 'RESIZE_TH_WIDTH';
@@ -507,7 +499,7 @@ module.exports = { "default": __webpack_require__(595), __esModule: true };
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getAdminList = exports.authInfo = exports.updateListConfigs = exports.logoutFetch = exports.loginFetch = exports.makePost = exports.ActionCreator = undefined;
+exports.getAdminList = exports.authInfo = exports.logoutFetch = exports.loginFetch = exports.makePost = exports.ActionCreator = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入isomorphic-fetch API来进行Ajax
 
@@ -747,9 +739,6 @@ var makeGetActionCreator = function makeGetActionCreator(type, url) {
 var loginFetch = exports.loginFetch = makePostActionCreator(_constants.POST_LOGIN, '/api/admin/login', 'body', 'path', 'message');
 //退出登录
 var logoutFetch = exports.logoutFetch = makeGetActionCreator(_constants.GET_LOGOUT, '/api/admin/logout', 'body', 'path', 'message');
-
-//更新列表配置
-var updateListConfigs = exports.updateListConfigs = makePostActionCreator(_constants.UPDATE_LIST_CONFIGS, '/api/setting/list_configs', 'body', 'path', 'message');
 
 //获取认证信息
 var authInfo = exports.authInfo = makeGetActionCreator(_constants.GET_AUTH_INFO, '/api/authinfo', 'path', 'message');
@@ -19389,14 +19378,15 @@ var adminlistInitialState = {
     }],
     list: [], //列表数据
     count: 64, //列表总条数
-    page: 2, //当前页
 
     //列表配置
     configs: {
         listPath: 'adminlist',
+        page: 1, //当前页
         limit: 20, //单页显示条数
         searchMode: '精确搜索', //搜索模式
         selectAll: true,
+        search: '',
         actions: [],
         column: [{
             key: 'id',
@@ -19471,7 +19461,7 @@ function adminlist() {
         case 'adminlist_resize_th':
             configs = _extends({}, state.configs, action.payload);
             return _extends({}, state, { configs: configs });
-        case _constants.CHANGE_COLUMN:
+        case _constants.UPDATE_LIST_CONFIGS:
             configs = _extends({}, state.configs, action.payload);
             return _extends({}, state, { configs: configs });
         default:
@@ -25750,8 +25740,7 @@ var AdminListUI = function (_Component) {
 		key: 'componentWillMount',
 		value: function componentWillMount() {
 			this.props.getList({
-				page: 2,
-				limit: this.props.configs.limit
+				page: 1
 			});
 		}
 	}, {
@@ -25761,13 +25750,13 @@ var AdminListUI = function (_Component) {
 			    tools = _props.tools,
 			    list = _props.list,
 			    count = _props.count,
-			    configs = _props.configs,
-			    page = _props.page;
+			    configs = _props.configs;
 			var _props2 = this.props,
 			    resizeThEvent = _props2.resizeThEvent,
-			    getList = _props2.getList,
+			    setPageEvent = _props2.setPageEvent,
 			    toolsClickEvent = _props2.toolsClickEvent,
 			    setSearchMode = _props2.setSearchMode,
+			    searchEvent = _props2.searchEvent,
 			    changeLimitEvent = _props2.changeLimitEvent,
 			    changeColumnEvent = _props2.changeColumnEvent,
 			    orderbyEvent = _props2.orderbyEvent;
@@ -25804,7 +25793,7 @@ var AdminListUI = function (_Component) {
 								{ icon: 'icon-wrench', bgColor: 'bg-red' },
 								_react2.default.createElement(_dropdown.Dropmenu, { options: tools, clickEvent: toolsClickEvent })
 							),
-							_react2.default.createElement(_common.ListSearcher, { search: 'search...', getList: getList, searchMode: configs.searchMode, setSearchMode: setSearchMode })
+							_react2.default.createElement(_common.ListSearcher, { search: 'search...', searchEvent: searchEvent, configs: configs, setSearchMode: setSearchMode })
 						),
 						_react2.default.createElement(
 							'div',
@@ -25819,7 +25808,7 @@ var AdminListUI = function (_Component) {
 								{ 'data-content': '\u65B0\u5EFA', to: '/admin/form', className: 'tools bg-teal ititle' },
 								_react2.default.createElement('i', { className: 'icon-plus' })
 							),
-							_react2.default.createElement(_common.ListConfiger, { changeLimitEvent: changeLimitEvent, changeColumnEvent: changeColumnEvent, page: page, configs: configs })
+							_react2.default.createElement(_common.ListConfiger, { changeLimitEvent: changeLimitEvent, changeColumnEvent: changeColumnEvent, page: configs.page, configs: configs })
 						)
 					),
 					_react2.default.createElement(
@@ -25832,7 +25821,7 @@ var AdminListUI = function (_Component) {
 							_react2.default.createElement(_common.ListBody, { list: list, column: configs.column })
 						)
 					),
-					_react2.default.createElement(_common.PageList, { getList: getList, count: parseInt(count), limit: parseInt(configs.limit), page: parseInt(page) })
+					_react2.default.createElement(_common.PageList, { setPageEvent: setPageEvent, count: parseInt(count), configs: configs })
 				)
 			);
 		}
@@ -25884,9 +25873,6 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 	return state.adminlist;
 }, function (dispatch, ownProps) {
 
-	console.group("connect");
-	console.log(ownProps.props);
-	console.groupEnd("connect");
 	var updateConfigs = function updateConfigs(configs) {
 		(0, _actions.makePost)('/api/setting/list_configs', {
 			listPath: configs.listPath,
@@ -25903,26 +25889,51 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 		orderbyEvent: function orderbyEvent(v) {
 			//
 		},
-		setSearchMode: function setSearchMode(v) {
-			//
+		//搜索模式
+		setSearchMode: function setSearchMode(modeValue) {
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
+				searchMode: modeValue
+			}, '/adminlist'));
 		},
+		//搜索
+		searchEvent: function searchEvent(search) {
+			dispatch((0, _actions.getAdminList)({
+				search: search
+			}, '/adminlist'));
+		},
+		//改变页码
+		setPageEvent: function setPageEvent(page) {
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
+				page: page
+			}, '/adminlist'));
+			dispatch((0, _actions.getAdminList)({
+				page: page
+			}, '/adminlist'));
+		},
+		//改变每页显示条数
 		changeLimitEvent: function changeLimitEvent(v, configs) {
 
 			configs.limit = parseInt(v);
 
-			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_COLUMN, {
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				limit: v
 			}, '/adminlist'));
 
 			updateConfigs(configs);
+
+			dispatch((0, _actions.getAdminList)({
+				page: configs.page,
+				limit: configs.limit
+			}, '/adminlist'));
 		},
+		//改变表格列宽
 		changeColumnEvent: function changeColumnEvent(key, configs) {
 
 			var column = configs.column;
 
 			column[key].visibility = column[key].visibility ? false : true;
 
-			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_COLUMN, {
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				column: column
 			}, '/adminlist'));
 
@@ -26014,7 +26025,6 @@ var Pagebar = exports.Pagebar = function (_Component) {
 
 /**
  * 分页组件
- * @type {[type]}
  */
 
 
@@ -26029,34 +26039,16 @@ var PageList = exports.PageList = function (_Component2) {
 		_this2.gotoPage = _this2.props.page;
 
 		//ES6 类中函数必须手动绑定
-		_this2.pageClickEvent = _this2.pageClickEvent.bind(_this2);
 		_this2.inputEnterEvent = _this2.inputEnterEvent.bind(_this2);
-		_this2.gotoClickEvent = _this2.gotoClickEvent.bind(_this2);
 		return _this2;
 	}
 
 	_createClass(PageList, [{
-		key: 'pageClickEvent',
-		value: function pageClickEvent(event) {
-			this.getList({
-				page: event.currentTarget.getAttribute('data-val')
-			});
-		}
-	}, {
 		key: 'inputEnterEvent',
 		value: function inputEnterEvent(event) {
 			if (event.charCode === 13) {
-				this.getList({
-					page: this.gotoPage
-				});
+				this.props.setPageEvent(this.gotoPage);
 			}
-		}
-	}, {
-		key: 'gotoClickEvent',
-		value: function gotoClickEvent(event) {
-			this.getList({
-				page: this.gotoPage
-			});
 		}
 	}, {
 		key: 'render',
@@ -26065,8 +26057,10 @@ var PageList = exports.PageList = function (_Component2) {
 
 			var _props2 = this.props,
 			    count = _props2.count,
-			    limit = _props2.limit,
-			    page = _props2.page;
+			    setPageEvent = _props2.setPageEvent;
+			var _props$configs = this.props.configs,
+			    limit = _props$configs.limit,
+			    page = _props$configs.page;
 
 
 			if (count > limit) {
@@ -26087,13 +26081,29 @@ var PageList = exports.PageList = function (_Component2) {
 				}
 
 				var pages = [];
+
+				var _loop = function _loop(i) {
+					var pageNumber = begin + i;
+
+					if (pageNumber == page) {
+						pages.push(_react2.default.createElement(
+							'a',
+							{ key: pageNumber, className: 'active' },
+							pageNumber
+						));
+					} else {
+						pages.push(_react2.default.createElement(
+							'a',
+							{ key: pageNumber, onClick: function onClick(e) {
+									return setPageEvent(pageNumber);
+								} },
+							pageNumber
+						));
+					}
+				};
+
 				for (var i = 0; i < showPage; i++) {
-					var p = begin + i;
-					pages.push(_react2.default.createElement(
-						'a',
-						{ key: p, onClick: this.pageClickEvent, 'data-val': p, className: p == page ? 'active' : '' },
-						p
-					));
+					_loop(i);
 				}
 
 				return _react2.default.createElement(
@@ -26117,18 +26127,24 @@ var PageList = exports.PageList = function (_Component2) {
 					' \u9875',
 					_react2.default.createElement(
 						'a',
-						{ onClick: this.gotoClickEvent },
+						{ onClick: function onClick(e) {
+								return setPageEvent(_this3.gotoPage);
+							} },
 						'Go'
 					),
 					_react2.default.createElement(
 						'a',
-						{ className: 'page-prev', 'data-val': page - 1 ? page - 1 : page, onClick: this.pageClickEvent },
+						{ className: 'page-prev', onClick: function onClick(e) {
+								return setPageEvent(page - 1 ? page - 1 : page);
+							} },
 						_react2.default.createElement('i', { className: 'icon-arrow-left' })
 					),
 					pages,
 					_react2.default.createElement(
 						'a',
-						{ className: 'page-next', 'data-val': page + 1 < _pageCount ? page + 1 : _pageCount, onClick: this.pageClickEvent },
+						{ className: 'page-next', onClick: function onClick(e) {
+								return setPageEvent(page + 1 < _pageCount ? page + 1 : _pageCount);
+							} },
 						_react2.default.createElement('i', { className: 'icon-arrow-right' })
 					)
 				);
@@ -26208,7 +26224,6 @@ var ListActioner = exports.ListActioner = function (_Component3) {
 
 /**
  * 列表搜索组件
- * @type {String}
  */
 
 
@@ -26221,7 +26236,7 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 		var _this5 = _possibleConstructorReturn(this, (ListSearcher.__proto__ || Object.getPrototypeOf(ListSearcher)).call(this, props));
 
 		console.log("Listsearcher:", _this5.props);
-		_this5.search = _this5.props.search;
+		_this5.searchValue = _this5.props.search;
 
 		//ES6 类中函数必须手动绑定
 		_this5.inputEnterEvent = _this5.inputEnterEvent.bind(_this5);
@@ -26233,17 +26248,13 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 		key: 'inputEnterEvent',
 		value: function inputEnterEvent(event) {
 			if (event.charCode === 13) {
-				this.getList({
-					search: this.search
-				});
+				this.props.searchEvent(this.searchValue);
 			}
 		}
 	}, {
 		key: 'searchSubmitEvent',
 		value: function searchSubmitEvent(event) {
-			this.getList({
-				search: this.search
-			});
+			this.props.searchEvent(this.searchValue);
 		}
 	}, {
 		key: 'render',
@@ -26251,16 +26262,18 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 			var _this6 = this;
 
 			var _props3 = this.props,
-			    searchMode = _props3.searchMode,
-			    search = _props3.search,
-			    setSearchMode = _props3.setSearchMode;
+			    setSearchMode = _props3.setSearchMode,
+			    searchEvent = _props3.searchEvent;
+			var _props$configs2 = this.props.configs,
+			    searchMode = _props$configs2.searchMode,
+			    search = _props$configs2.search;
 
 
 			return _react2.default.createElement(
 				'div',
 				{ className: 'tools olist-search' },
 				_react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(n) {
-						return _this6.search = n;
+						return _this6.searchValue = n;
 					}, placeholder: searchMode, defaultValue: search, onKeyPress: this.inputEnterEvent }),
 				_react2.default.createElement(
 					'div',
@@ -26467,9 +26480,9 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 			var _props5 = this.props,
 			    orderbyEvent = _props5.orderbyEvent,
 			    resizeThEvent = _props5.resizeThEvent;
-			var _props$configs = this.props.configs,
-			    column = _props$configs.column,
-			    listPath = _props$configs.listPath;
+			var _props$configs3 = this.props.configs,
+			    column = _props$configs3.column,
+			    listPath = _props$configs3.listPath;
 
 
 			var columns = column.map(function (v, i) {
@@ -26513,6 +26526,11 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 
 	return ListHeader;
 }(_react.Component);
+
+/**
+ * 列表主体
+ */
+
 
 var ListBody = exports.ListBody = function (_Component7) {
 	_inherits(ListBody, _Component7);
