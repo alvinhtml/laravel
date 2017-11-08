@@ -72,6 +72,9 @@ class AdminController extends Controller
     public function showAdminList(Admin $admin, Setting $setting, Request $request)
     {
 
+
+
+
         $email = Auth::guard('admin')->user()->email;
 
         //查询数据库中是否已经存了对应的配置
@@ -100,7 +103,35 @@ class AdminController extends Controller
             $results['configs'] = $configs;
         }
 
-        $datalist = $admin->offset($offset_num)->limit($limit)->get();
+
+        $order_str = $request->input('order');
+        //判断GET参数中是否有 'order'
+        if (isset($order_str)) {
+            $order_arr = explode(',', $order_str);
+        } else {
+            $column = $configs->column;
+            foreach ($column as $line) {
+                if ($line->order == 'asc' || $line->order == 'desc') {
+                    $order_arr = array($line->key, $line->order);
+                    break;
+                }
+            }
+        }
+
+        if (isset($order_arr)) {
+            $datalist = $admin
+                ->offset($offset_num)
+                ->limit($limit)
+                ->orderBy($order_arr[0], $order_arr[1])
+                ->get();
+        } else {
+            $datalist = $admin
+                ->offset($offset_num)
+                ->limit($limit)
+                ->get();
+        }
+
+
 
         $results['list'] = $datalist->toArray();
         $results['count'] = $count;

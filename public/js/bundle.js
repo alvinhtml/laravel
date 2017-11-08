@@ -383,6 +383,7 @@ var GET_LOGOUT = exports.GET_LOGOUT = 'GET_LOGOUT';
 
 //list config
 var UPDATE_LIST_CONFIGS = exports.UPDATE_LIST_CONFIGS = 'UPDATE_LIST_CONFIGS';
+var CHANGE_LIST_CHECKBOX = exports.CHANGE_LIST_CHECKBOX = 'CHANGE_LIST_CHECKBOX';
 
 //admin list
 var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
@@ -6829,7 +6830,6 @@ document.addEventListener('mousemove', function (e) {
         }
     }
 });
-
 document.addEventListener('mouseup', function (e) {
 
     //结束表头宽度调整, 并把调整后的宽 dispatch 到 store
@@ -19361,6 +19361,8 @@ exports.adminlist = adminlist;
 
 var _constants = __webpack_require__(41);
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 //初始化状态
 var adminlistInitialState = {
     isFetching: 0,
@@ -19378,14 +19380,14 @@ var adminlistInitialState = {
     }],
     list: [], //列表数据
     count: 64, //列表总条数
-
+    isCheckAll: false,
     //列表配置
     configs: {
         listPath: 'adminlist',
         page: 1, //当前页
         limit: 20, //单页显示条数
         searchMode: '精确搜索', //搜索模式
-        selectAll: true,
+        checkboxs: true, //选择框 0:无, 1:有
         search: '',
         actions: [],
         column: [{
@@ -19462,6 +19464,77 @@ function adminlist() {
             configs = _extends({}, state.configs, action.payload);
             return _extends({}, state, { configs: configs });
         case _constants.UPDATE_LIST_CONFIGS:
+            configs = _extends({}, state.configs, action.payload);
+            return _extends({}, state, { configs: configs });
+        case _constants.CHANGE_LIST_CHECKBOX:
+            if (action.path === "adminlist") {
+                if (action.payload.hasOwnProperty("isCheckAll")) {
+                    //参数为全选的时候
+                    var list = [];
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = state.list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var v = _step.value;
+
+                            v.checked = action.payload.isCheckAll;
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+
+                    return _extends({}, state, action.payload);
+                } else {
+                    //参数为单选的时候
+                    var isCheckAll = true;
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = state.list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var _v = _step2.value;
+
+                            if (action.payload.id == _v.id) {
+                                _v.checked = action.payload.checked;
+                            }
+                            //只要有一个复选框为 false, 全选复选框就会为 false
+                            console.log(_v.id, _v.checked);
+                            if (_v.checked === false || _v.checked === undefined) {
+                                isCheckAll = false;
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+
+                    return _extends({}, state, { list: [].concat(_toConsumableArray(state.list)) }, { isCheckAll: isCheckAll });
+                }
+            }
             configs = _extends({}, state.configs, action.payload);
             return _extends({}, state, { configs: configs });
         default:
@@ -25750,7 +25823,8 @@ var AdminListUI = function (_Component) {
 			    tools = _props.tools,
 			    list = _props.list,
 			    count = _props.count,
-			    configs = _props.configs;
+			    configs = _props.configs,
+			    isCheckAll = _props.isCheckAll;
 			var _props2 = this.props,
 			    resizeThEvent = _props2.resizeThEvent,
 			    setPageEvent = _props2.setPageEvent,
@@ -25759,7 +25833,10 @@ var AdminListUI = function (_Component) {
 			    searchEvent = _props2.searchEvent,
 			    changeLimitEvent = _props2.changeLimitEvent,
 			    changeColumnEvent = _props2.changeColumnEvent,
-			    orderbyEvent = _props2.orderbyEvent;
+			    orderbyEvent = _props2.orderbyEvent,
+			    checkEvent = _props2.checkEvent,
+			    checkAllEvent = _props2.checkAllEvent;
+
 
 			return _react2.default.createElement(
 				'div',
@@ -25817,8 +25894,8 @@ var AdminListUI = function (_Component) {
 						_react2.default.createElement(
 							'table',
 							{ className: 'olist-table', id: 'olist_table' },
-							_react2.default.createElement(_common.ListHeader, { orderbyEvent: orderbyEvent, resizeThEvent: resizeThEvent, configs: configs }),
-							_react2.default.createElement(_common.ListBody, { list: list, column: configs.column })
+							_react2.default.createElement(_common.ListHeader, { orderbyEvent: orderbyEvent, resizeThEvent: resizeThEvent, checkAllEvent: checkAllEvent, isCheckAll: isCheckAll, configs: configs }),
+							_react2.default.createElement(_common.ListBody, { list: list, configs: configs, checkEvent: checkEvent })
 						)
 					),
 					_react2.default.createElement(_common.PageList, { setPageEvent: setPageEvent, count: parseInt(count), configs: configs })
@@ -25881,34 +25958,70 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 	};
 	return {
 		getList: function getList(o) {
-			dispatch((0, _actions.getAdminList)(o, '/adminlist'));
+			dispatch((0, _actions.getAdminList)(o));
 		},
 		toolsClickEvent: function toolsClickEvent(v) {
 			//
 		},
-		orderbyEvent: function orderbyEvent(v) {
-			//
+		orderbyEvent: function orderbyEvent(v, key, configs) {
+			console.log("A:", v, configs);
+
+			var column = configs.column;
+
+			for (var i = 0; i < column.length; i++) {
+				console.log(key, i);
+				if (column[i].order) {
+					if (i == key) {
+						column[i].order = v;
+					} else {
+						column[i].order = 'order';
+					}
+				}
+			}
+
+			console.log("B:", column);
+
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
+				column: column
+			}, 'adminlist'));
+			dispatch((0, _actions.getAdminList)({
+				order: column[key].key + ',' + v
+			}));
+		},
+		//全选
+		checkAllEvent: function checkAllEvent(element) {
+			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_LIST_CHECKBOX, {
+				isCheckAll: element.checked
+			}, 'adminlist'));
+		},
+		//单选
+		checkEvent: function checkEvent(e, element, id) {
+			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_LIST_CHECKBOX, {
+				//isCheckAll: element.checked
+				id: id,
+				checked: element.checked
+			}, 'adminlist'));
 		},
 		//搜索模式
 		setSearchMode: function setSearchMode(modeValue) {
 			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				searchMode: modeValue
-			}, '/adminlist'));
+			}, 'adminlist'));
 		},
 		//搜索
 		searchEvent: function searchEvent(search) {
 			dispatch((0, _actions.getAdminList)({
 				search: search
-			}, '/adminlist'));
+			}));
 		},
 		//改变页码
 		setPageEvent: function setPageEvent(page) {
 			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				page: page
-			}, '/adminlist'));
+			}, 'adminlist'));
 			dispatch((0, _actions.getAdminList)({
 				page: page
-			}, '/adminlist'));
+			}));
 		},
 		//改变每页显示条数
 		changeLimitEvent: function changeLimitEvent(v, configs) {
@@ -25917,14 +26030,14 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 
 			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				limit: v
-			}, '/adminlist'));
+			}, 'adminlist'));
 
 			updateConfigs(configs);
 
 			dispatch((0, _actions.getAdminList)({
 				page: configs.page,
 				limit: configs.limit
-			}, '/adminlist'));
+			}));
 		},
 		//改变表格列宽
 		changeColumnEvent: function changeColumnEvent(key, configs) {
@@ -25935,7 +26048,7 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 
 			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				column: column
-			}, '/adminlist'));
+			}, 'adminlist'));
 
 			updateConfigs(configs);
 		}
@@ -25963,6 +26076,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.ListBody = exports.ListHeader = exports.ListConfiger = exports.ListSearcher = exports.ListActioner = exports.PageList = exports.Pagebar = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -26457,6 +26572,7 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 
 		//ES6 类中函数必须手动绑定
 		_this8.onmousedown = _this8.onmousedown.bind(_this8);
+		_this8.onmousedown = _this8.onmousedown.bind(_this8);
 		return _this8;
 	}
 
@@ -26471,6 +26587,14 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 				key: key,
 				listPath: listPath
 			};
+			e.stopPropagation();
+		}
+	}, {
+		key: 'onOrderByEvent',
+		value: function onOrderByEvent(e, i, order) {
+			if (order) {
+				this.props.orderbyEvent(order !== 'order asc' ? 'order asc' : 'order desc', i, this.props.configs);
+			}
 		}
 	}, {
 		key: 'render',
@@ -26478,25 +26602,31 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 			var _this9 = this;
 
 			var _props5 = this.props,
+			    resizeThEvent = _props5.resizeThEvent,
 			    orderbyEvent = _props5.orderbyEvent,
-			    resizeThEvent = _props5.resizeThEvent;
+			    checkAllEvent = _props5.checkAllEvent,
+			    isCheckAll = _props5.isCheckAll;
 			var _props$configs3 = this.props.configs,
 			    column = _props$configs3.column,
-			    listPath = _props$configs3.listPath;
+			    listPath = _props$configs3.listPath,
+			    checkboxs = _props$configs3.checkboxs;
 
 
 			var columns = column.map(function (v, i) {
-				var resize = v.resize ? _react2.default.createElement('span', { onMouseDown: function onMouseDown(e) {
+				var resize = v.resize ? _react2.default.createElement('span', { onClick: function onClick(e) {
+						e.stopPropagation();
+					}, onMouseDown: function onMouseDown(e) {
 						_this9.onmousedown(e, _this9.refs['resize_' + v.key], i, listPath);
 					}, className: 'resize' }) : '';
+				var order = v.order ? _react2.default.createElement('span', { onClick: function onClick(e) {
+						return _this9.onOrderByEvent(e, i, v.order);
+					}, className: v.order }) : '';
 				return _react2.default.createElement(
 					'th',
 					{
 						ref: "resize_" + v.key,
 						key: v.key,
 						className: v.order ? v.order : '',
-						onClick: orderbyEvent,
-						'data-order': v.order,
 						'data-val': v.key,
 						style: {
 							width: v.width ? v.width + 'px' : 'auto',
@@ -26508,9 +26638,21 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 						null,
 						v.title
 					),
+					order,
 					resize
 				);
 			});
+
+			var checkboxDom = checkboxs ? _react2.default.createElement(
+				'th',
+				{
+					className: 'row-checkbox',
+					key: 'check-all'
+				},
+				_react2.default.createElement('input', { checked: isCheckAll, type: 'checkbox', ref: 'checkbox_all', onChange: function onChange(e) {
+						checkAllEvent(_this9.refs['checkbox_all']);
+					} })
+			) : '';
 
 			return _react2.default.createElement(
 				'thead',
@@ -26518,6 +26660,7 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 				_react2.default.createElement(
 					'tr',
 					null,
+					checkboxDom,
 					columns
 				)
 			);
@@ -26544,14 +26687,18 @@ var ListBody = exports.ListBody = function (_Component7) {
 	_createClass(ListBody, [{
 		key: 'render',
 		value: function render() {
+			var _this11 = this;
+
 			var _props6 = this.props,
 			    list = _props6.list,
-			    column = _props6.column;
+			    configs = _props6.configs,
+			    checkEvent = _props6.checkEvent,
+			    ischeck = _props6.ischeck;
 
 
 			var lines = function lines(line, key) {
 
-				var columns = column.map(function (v, i) {
+				var columns = configs.column.map(function (v, i) {
 					return _react2.default.createElement(
 						'td',
 						{
@@ -26567,10 +26714,24 @@ var ListBody = exports.ListBody = function (_Component7) {
 						)
 					);
 				});
+				console.log(_typeof(line.checked));
+				var checked = typeof line.checked === 'undefined' ? false : line.checked;
+				var checkboxDom = configs.checkboxs ? _react2.default.createElement(
+					'td',
+					{ className: 'row-checkbox', key: 'check' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'td-cell' },
+						_react2.default.createElement('input', { value: line.id, checked: checked, type: 'checkbox', ref: "checkbox_" + line.id, onChange: function onChange(e) {
+								return checkEvent(e, _this11.refs['checkbox_' + line.id], line.id);
+							} })
+					)
+				) : '';
 
 				return _react2.default.createElement(
 					'tr',
 					{ key: key },
+					checkboxDom,
 					columns
 				);
 			};
