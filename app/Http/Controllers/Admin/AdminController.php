@@ -72,9 +72,9 @@ class AdminController extends Controller
     public function showAdminList(Admin $admin, Setting $setting, Request $request)
     {
 
+        $results = Error::make(0);
 
-
-
+        //当前管理员用户邮箱
         $email = Auth::guard('admin')->user()->email;
 
         //查询数据库中是否已经存了对应的配置
@@ -82,56 +82,69 @@ class AdminController extends Controller
             ->where('name', 'adminlist')
             ->get();
 
-        $configs = json_decode($settings->first()['setting']);
-
-        $page = $request->input('page', isset($configs->page) ? $configs->page : 1);
-        $limit = $request->input('limit', isset($configs->limit) ? $configs->limit : 20);
-
-        //判断最大页数
-        $count = $admin->count();
-
-        $page = min($page, ceil($count / $limit));
-
-
-        $offset_num = $page==1 ? 0 : ($page - 1) * $limit;
-
-        $results = Error::make(0);
-
+        //检查配置数据是否为空
         if (!$settings->isEmpty()) {
-            $configs->page = $page;
-            $configs->limit = $limit;
-            $results['configs'] = $configs;
-        }
-
-
-        $order_str = $request->input('order');
-        //判断GET参数中是否有 'order'
-        if (isset($order_str)) {
-            $order_arr = explode(',', $order_str);
-        } else {
+            $configs = json_decode($settings->first()['setting']);
+            $page = $request->input('page', isset($configs->page) ? $configs->page : 1);
+            $limit = $request->input('limit', isset($configs->limit) ? $configs->limit : 20);
             $column = $configs->column;
+            $order_str = '';
             foreach ($column as $line) {
                 if ($line->order == 'asc' || $line->order == 'desc') {
-                    $order_arr = array($line->key, $line->order);
+                    $order_str = $line->key . "," . $line->order;
                     break;
                 }
             }
+            $order_str = $request->input('order', $order_str ? $order_str : '');
+
+            $configs->page = $page;
+            $configs->limit = $limit;
+            $results['configs'] = $configs;
+        } else {
+            $page = $request->input('page', 1);
+            $limit = $request->input('limit', 20);
+            $order_str = $request->input('order', '');
+
         }
 
-        if (isset($order_arr)) {
+        //获取最大页数
+        $count = $admin->count();
+        $page = min($page, ceil($count / $limit));
+
+        //limit起始页
+        $offset_num = $page == 1 ? 0 : ($page - 1) * $limit;
+
+        //把 order 转为数组
+        if (!empty($order_str)) {
+            $order_arr = explode(',', $order_str);
+
+            if (!empty($column)) {
+                foreach ($column as $k=>$v) {
+                    if ($v->order != false) {
+                        if ($v->key == $order_arr[0]) {
+                            $v->order = $order_arr[1];
+                        } else {
+                            $v->order = "order";
+                        }
+                        $column[$k] = $v;
+                    }
+                }
+                $configs->column = $column;
+            }
+
             $datalist = $admin
                 ->offset($offset_num)
                 ->limit($limit)
                 ->orderBy($order_arr[0], $order_arr[1])
                 ->get();
+
         } else {
             $datalist = $admin
                 ->offset($offset_num)
                 ->limit($limit)
                 ->get();
+
         }
-
-
 
         $results['list'] = $datalist->toArray();
         $results['count'] = $count;

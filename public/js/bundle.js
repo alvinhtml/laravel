@@ -19687,17 +19687,6 @@ var App = (0, _reactRedux.connect)(function (state) {
 
 exports.default = App;
 
-// <meta http-equiv="refresh" content="0;url=http://www.baidu.com">
-// <div className="manage">
-//     <Header />
-//     <Sidebar />
-//     <Switch>
-//         <Route exact path="/" component={Home}/>
-//         <Route path="/home" component={Home}/>
-//         <Route path="/admin" component={Adminlist}/>
-//     </Switch>
-// </div>
-
 /***/ }),
 /* 669 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -25963,8 +25952,9 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 		toolsClickEvent: function toolsClickEvent(v) {
 			//
 		},
+		//排序
 		orderbyEvent: function orderbyEvent(v, key, configs) {
-			console.log("A:", v, configs);
+			console.log("A-order:", v, configs.column[key].order);
 
 			var column = configs.column;
 
@@ -25979,7 +25969,7 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 				}
 			}
 
-			console.log("B:", column);
+			console.log("B:", column[1].order, column);
 
 			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
 				column: column
@@ -26593,7 +26583,7 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 		key: 'onOrderByEvent',
 		value: function onOrderByEvent(e, i, order) {
 			if (order) {
-				this.props.orderbyEvent(order !== 'order asc' ? 'order asc' : 'order desc', i, this.props.configs);
+				this.props.orderbyEvent(order !== 'asc' ? 'asc' : 'desc', i, this.props.configs);
 			}
 		}
 	}, {
@@ -26620,13 +26610,12 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 					}, className: 'resize' }) : '';
 				var order = v.order ? _react2.default.createElement('span', { onClick: function onClick(e) {
 						return _this9.onOrderByEvent(e, i, v.order);
-					}, className: v.order }) : '';
+					}, className: 'order ' + v.order }) : '';
 				return _react2.default.createElement(
 					'th',
 					{
 						ref: "resize_" + v.key,
 						key: v.key,
-						className: v.order ? v.order : '',
 						'data-val': v.key,
 						style: {
 							width: v.width ? v.width + 'px' : 'auto',
