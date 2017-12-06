@@ -21,6 +21,7 @@
 
     <!-- External CSS -->
     <link type="text/css" rel="stylesheet" href="http://mui.xuehtml.com/src/css/miniui.min.css">
+    <link type="text/css" rel="stylesheet" href="http://mui.xuehtml.com/src/css/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="http://mui.xuehtml.com/src/css/simple-line-icons.css">
     <link type="text/css" rel="stylesheet" href="http://project.xuehtml.com/react-redux/src/css/style.css">
 
