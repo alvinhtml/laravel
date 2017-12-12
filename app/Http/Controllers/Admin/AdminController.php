@@ -88,15 +88,7 @@ class AdminController extends Controller
             $page = $request->input('page', isset($configs->page) ? $configs->page : 1);
             $limit = $request->input('limit', isset($configs->limit) ? $configs->limit : 20);
             $column = $configs->column;
-            $order_str = '';
-            foreach ($column as $line) {
-                if ($line->order == 'asc' || $line->order == 'desc') {
-                    $order_str = $line->key . "," . $line->order;
-                    break;
-                }
-            }
-            $order_str = $request->input('order', $order_str ? $order_str : '');
-
+            $order_arr = [$configs->orderkey, $configs->orderby];
             $configs->page = $page;
             $configs->limit = $limit;
             $results['configs'] = $configs;
@@ -107,44 +99,57 @@ class AdminController extends Controller
 
         }
 
-        //获取最大页数
-        $count = $admin->count();
+        //搜索
+        $search = $request->input('search');
+        if (isset($search)) {
+            if (isset($results['configs'])) {
+                $results['configs']->search = $search;
+            }
+            $datalist = $admin->where('name', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhere('desp', 'like', '%'.$search.'%');
+            //获取最大页数
+            $count = $datalist->count();
+        } else {
+            //获取最大页数
+            $count = $admin->count();
+            $datalist = $admin;
+        }
+
         $page = min($page, ceil($count / $limit));
 
         //limit起始页
         $offset_num = $page == 1 ? 0 : ($page - 1) * $limit;
 
-        //把 order 转为数组
-        if (!empty($order_str)) {
-            $order_arr = explode(',', $order_str);
-
-            if (!empty($column)) {
-                foreach ($column as $k=>$v) {
-                    if ($v->order != false) {
-                        if ($v->key == $order_arr[0]) {
-                            $v->order = $order_arr[1];
-                        } else {
-                            $v->order = "order";
-                        }
-                        $column[$k] = $v;
-                    }
-                }
-                $configs->column = $column;
-            }
-
-            $datalist = $admin
+        //排序
+        $order = $request->input('order');
+        //如果GET参数中有排序字段
+        if (isset($order)) {
+            $order_arr = explode(',', $order);
+            $datalist = $datalist
                 ->offset($offset_num)
                 ->limit($limit)
-                ->orderBy($order_arr[0], $order_arr[1])
-                ->get();
+                ->orderBy($order_arr[0], $order_arr[1]);
 
         } else {
-            $datalist = $admin
-                ->offset($offset_num)
-                ->limit($limit)
-                ->get();
-
+            //如果GET参数中没有排序字段, 但配置中有排序字段
+            if (isset($order_arr) && !empty($order_arr[0]) && !empty($order_arr[1])) {
+                $datalist = $datalist
+                    ->offset($offset_num)
+                    ->limit($limit)
+                    ->orderBy($order_arr[0], $order_arr[1]);
+            } else {
+                $datalist = $datalist
+                    ->offset($offset_num)
+                    ->limit($limit);
+            }
         }
+
+        //$datalist = $admin->get();
+
+
+
+        $datalist = $datalist->get();
 
         $results['list'] = $datalist->toArray();
         $results['count'] = $count;
@@ -159,9 +164,17 @@ class AdminController extends Controller
      * @param  \App\Admin  $admin
      * @return \Illuminate\Http\Response
      */
-    public function edit(Admin $admin)
+    public function add(Admin $admin, Request $request)
     {
-        //
+        Admin::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'type' => rand(0, 2),
+            'ouid' => rand(0, 10),
+            'state' => rand(0, 1),
+            'desp' => '',
+            'password' => bcrypt($data['password']),
+        ]);
     }
 
     /**

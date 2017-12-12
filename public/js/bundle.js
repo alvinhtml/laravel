@@ -3276,7 +3276,6 @@ _react2.default.createElement(
     { defaultIsVisible: false, toggleVisibilityKey: 'ctrl-h', changePositionKey: 'ctrl-q' },
     _react2.default.createElement(_reduxDevtoolsLogMonitor2.default, null)
 ));
-console.log("LogMonitor", _reduxDevtoolsLogMonitor2.default);
 
 exports.default = DevTools;
 
@@ -6606,9 +6605,9 @@ var nameShape = exports.nameShape = _propTypes2.default.oneOfType([_propTypes2.d
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ListBody = exports.ListHeader = exports.ListConfiger = exports.ListSearcher = exports.ListActioner = exports.PageList = exports.Crumbs = undefined;
+exports.Tbodyer = exports.Theader = exports.Configer = exports.Searcher = exports.ListActioner = exports.PageList = exports.Crumbs = undefined;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -6676,6 +6675,7 @@ var PageList = exports.PageList = function (_Component2) {
 
 		//ES6 类中函数必须手动绑定
 		_this2.inputEnterEvent = _this2.inputEnterEvent.bind(_this2);
+		_this2.setPageEvent = _this2.setPageEvent.bind(_this2);
 		return _this2;
 	}
 
@@ -6687,13 +6687,26 @@ var PageList = exports.PageList = function (_Component2) {
 			}
 		}
 	}, {
+		key: 'setPageEvent',
+		value: function setPageEvent(page) {
+			this.props.updateConfigs(_extends({}, this.props.configs, {
+				page: page
+			}));
+
+			var where = {
+				page: page
+			};
+			if (this.props.configs.search != '') {
+				where.search = this.props.configs.search;
+			}
+			this.props.getList(where);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this3 = this;
 
-			var _props2 = this.props,
-			    count = _props2.count,
-			    setPageEvent = _props2.setPageEvent;
+			var count = this.props.count;
 			var _props$configs = this.props.configs,
 			    limit = _props$configs.limit,
 			    page = _props$configs.page;
@@ -6703,6 +6716,8 @@ var PageList = exports.PageList = function (_Component2) {
 
 				//获取总页数
 				var _pageCount = count === 0 ? 0 : Math.ceil(count / limit);
+
+				//console.log("count-", pageCount , limit);
 
 				var begin = 1,
 				    //起始页
@@ -6731,7 +6746,7 @@ var PageList = exports.PageList = function (_Component2) {
 						pages.push(_react2.default.createElement(
 							'a',
 							{ key: pageNumber, className: 'animates', onClick: function onClick(e) {
-									return setPageEvent(pageNumber);
+									return _this3.setPageEvent(pageNumber);
 								} },
 							pageNumber
 						));
@@ -6764,14 +6779,14 @@ var PageList = exports.PageList = function (_Component2) {
 					_react2.default.createElement(
 						'a',
 						{ onClick: function onClick(e) {
-								return setPageEvent(_this3.gotoPage);
+								return _this3.setPageEvent(_this3.gotoPage);
 							} },
 						'Go'
 					),
 					_react2.default.createElement(
 						'a',
 						{ className: 'page-prev animates', onClick: function onClick(e) {
-								return setPageEvent(page - 1 ? page - 1 : page);
+								return _this3.setPageEvent(page - 1 ? page - 1 : page);
 							} },
 						_react2.default.createElement('i', { className: 'icon-arrow-left' })
 					),
@@ -6779,7 +6794,7 @@ var PageList = exports.PageList = function (_Component2) {
 					_react2.default.createElement(
 						'a',
 						{ className: 'page-next animates', onClick: function onClick(e) {
-								return setPageEvent(page + 1 < _pageCount ? page + 1 : _pageCount);
+								return _this3.setPageEvent(page + 1 < _pageCount ? page + 1 : _pageCount);
 							} },
 						_react2.default.createElement('i', { className: 'icon-arrow-right' })
 					)
@@ -6861,15 +6876,15 @@ var ListActioner = exports.ListActioner = function (_Component3) {
  */
 
 
-var ListSearcher = exports.ListSearcher = function (_Component4) {
-	_inherits(ListSearcher, _Component4);
+var Searcher = exports.Searcher = function (_Component4) {
+	_inherits(Searcher, _Component4);
 
-	function ListSearcher(props) {
-		_classCallCheck(this, ListSearcher);
+	function Searcher(props) {
+		_classCallCheck(this, Searcher);
 
-		var _this5 = _possibleConstructorReturn(this, (ListSearcher.__proto__ || Object.getPrototypeOf(ListSearcher)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (Searcher.__proto__ || Object.getPrototypeOf(Searcher)).call(this, props));
 
-		_this5.searchValue = _this5.props.search;
+		_this5.searchValue = undefined;
 
 		//ES6 类中函数必须手动绑定
 		_this5.inputEnterEvent = _this5.inputEnterEvent.bind(_this5);
@@ -6877,12 +6892,19 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 		_this5.openTaggleEvent = _this5.openTaggleEvent.bind(_this5);
 
 		_this5.state = {
-			opened: false
+			opened: false,
+			starch: ''
 		};
 		return _this5;
 	}
 
-	_createClass(ListSearcher, [{
+	_createClass(Searcher, [{
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			console.log("sv: ", this.searchValue.value, nextProps.configs.search);
+			this.searchValue.value = nextProps.configs.search;
+		}
+	}, {
 		key: 'openTaggleEvent',
 		value: function openTaggleEvent() {
 			this.setState({
@@ -6893,18 +6915,21 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 		key: 'inputEnterEvent',
 		value: function inputEnterEvent(event) {
 			if (event.charCode === 13) {
-				this.props.searchEvent(this.searchValue);
-				this.setState({
-					opened: false
-				});
+				this.searchSubmitEvent(event);
 			}
 		}
 	}, {
 		key: 'searchSubmitEvent',
 		value: function searchSubmitEvent(event) {
-			this.props.searchEvent(this.searchValue);
+			this.props.updateConfigs(_extends({}, this.props.configs, {
+				search: this.searchValue.value
+			}));
+			this.props.getList({
+				search: this.searchValue.value
+			});
 			this.setState({
-				opened: false
+				opened: false,
+				search: this.searchValue.value
 			});
 		}
 	}, {
@@ -6912,20 +6937,14 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 		value: function render() {
 			var _this6 = this;
 
-			var _props3 = this.props,
-			    setSearchMode = _props3.setSearchMode,
-			    searchEvent = _props3.searchEvent;
-			var _props$configs2 = this.props.configs,
-			    searchMode = _props$configs2.searchMode,
-			    search = _props$configs2.search;
-
+			var search = this.props.configs.search;
 
 			return _react2.default.createElement(
 				'div',
 				{ className: 'tools olist-search' },
 				_react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(n) {
 						return _this6.searchValue = n;
-					}, placeholder: searchMode, defaultValue: search, onKeyPress: this.inputEnterEvent }),
+					}, placeholder: '\u641C\u7D22', defaultValue: search, onKeyPress: this.inputEnterEvent }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'search-toggle', onClick: this.openTaggleEvent },
@@ -7157,12 +7176,12 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 						{ className: 'search-where-footer spaced' },
 						_react2.default.createElement(
 							'button',
-							{ className: 'button teal' },
+							{ onClick: this.searchSubmitEvent, className: 'button teal' },
 							'\u542B\u6761\u4EF6\u641C\u7D22'
 						),
 						_react2.default.createElement(
 							'button',
-							{ className: 'button blue' },
+							{ onClick: this.searchSubmitEvent, className: 'button blue' },
 							'\u4E0D\u542B\u6761\u4EF6\u641C\u7D22'
 						)
 					)
@@ -7171,7 +7190,7 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
 		}
 	}]);
 
-	return ListSearcher;
+	return Searcher;
 }(_react.Component);
 
 /**
@@ -7180,14 +7199,14 @@ var ListSearcher = exports.ListSearcher = function (_Component4) {
  */
 
 
-var ListConfiger = exports.ListConfiger = function (_Component5) {
-	_inherits(ListConfiger, _Component5);
+var Configer = exports.Configer = function (_Component5) {
+	_inherits(Configer, _Component5);
 
-	function ListConfiger(props) {
-		_classCallCheck(this, ListConfiger);
+	function Configer(props) {
+		_classCallCheck(this, Configer);
 
 		//设置 initial state
-		var _this7 = _possibleConstructorReturn(this, (ListConfiger.__proto__ || Object.getPrototypeOf(ListConfiger)).call(this, props));
+		var _this7 = _possibleConstructorReturn(this, (Configer.__proto__ || Object.getPrototypeOf(Configer)).call(this, props));
 
 		_this7.state = {
 			opened: false
@@ -7195,23 +7214,49 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
 
 		//ES6 类中函数必须手动绑定
 		_this7.handleClick = _this7.handleClick.bind(_this7);
+		_this7.changeLimitEvent = _this7.changeLimitEvent.bind(_this7);
+		_this7.changeColumnEvent = _this7.changeColumnEvent.bind(_this7);
 		return _this7;
 	}
 
-	_createClass(ListConfiger, [{
+	_createClass(Configer, [{
 		key: 'handleClick',
 		value: function handleClick(event) {
 			this.setState({
 				opened: !this.state.opened
 			});
 		}
+
+		//改变limit(每页显示条数)
+
+	}, {
+		key: 'changeLimitEvent',
+		value: function changeLimitEvent(e) {
+			var limit = e.currentTarget.getAttribute("data-val");
+			this.props.updateConfigs(_extends({}, this.props.configs, {
+				limit: limit
+			}));
+			this.props.getList({
+				page: 1,
+				limit: limit
+			});
+		}
+
+		//改变每列状态,显示或隐藏
+
+	}, {
+		key: 'changeColumnEvent',
+		value: function changeColumnEvent(e) {
+			var i = e.currentTarget.getAttribute("data-val");
+			this.props.configs.column[i].visibility = !this.props.configs.column[i].visibility;
+			this.props.updateConfigs(_extends({}, this.props.configs));
+		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var _props4 = this.props,
-			    configs = _props4.configs,
-			    changeLimitEvent = _props4.changeLimitEvent,
-			    changeColumnEvent = _props4.changeColumnEvent;
+			var _this8 = this;
+
+			var configs = this.props.configs;
 			var column = configs.column,
 			    limit = configs.limit;
 
@@ -7221,9 +7266,7 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
 			var limits = limitArray.map(function (v, i) {
 				return _react2.default.createElement(
 					'span',
-					{ key: i, onClick: function onClick(e) {
-							return changeLimitEvent(e.currentTarget.getAttribute("data-val"), configs);
-						}, 'data-val': v, className: v == limit ? 'active' : '' },
+					{ key: i, onClick: _this8.changeLimitEvent, 'data-val': v, className: v == limit ? 'active' : '' },
 					v
 				);
 			});
@@ -7231,9 +7274,7 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
 			var columns = column.map(function (v, i) {
 				return _react2.default.createElement(
 					'span',
-					{ key: i, onClick: function onClick(e) {
-							return changeColumnEvent(i, configs);
-						}, className: v.visibility ? 'active' : '' },
+					{ key: i, onClick: _this8.changeColumnEvent, 'data-val': i, className: v.visibility ? 'active' : '' },
 					v.title
 				);
 			});
@@ -7278,7 +7319,7 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
 		}
 	}]);
 
-	return ListConfiger;
+	return Configer;
 }(_react.Component);
 
 /**
@@ -7287,76 +7328,104 @@ var ListConfiger = exports.ListConfiger = function (_Component5) {
  */
 
 
-var ListHeader = exports.ListHeader = function (_Component6) {
-	_inherits(ListHeader, _Component6);
+var Theader = exports.Theader = function (_Component6) {
+	_inherits(Theader, _Component6);
 
-	function ListHeader(props) {
-		_classCallCheck(this, ListHeader);
+	function Theader(props) {
+		_classCallCheck(this, Theader);
 
 		//设置 initial state
-		var _this8 = _possibleConstructorReturn(this, (ListHeader.__proto__ || Object.getPrototypeOf(ListHeader)).call(this, props));
+		var _this9 = _possibleConstructorReturn(this, (Theader.__proto__ || Object.getPrototypeOf(Theader)).call(this, props));
 
-		_this8.state = {
+		_this9.state = {
 			opened: false
 		};
 
 		//ES6 类中函数必须手动绑定
-		_this8.onmousedown = _this8.onmousedown.bind(_this8);
-		_this8.onmousedown = _this8.onmousedown.bind(_this8);
-		return _this8;
+		_this9.onMousedown = _this9.onMousedown.bind(_this9);
+		_this9.onOrderByEvent = _this9.onOrderByEvent.bind(_this9);
+		_this9.onCheckEvent = _this9.onCheckEvent.bind(_this9);
+		return _this9;
 	}
 
-	_createClass(ListHeader, [{
-		key: 'onmousedown',
-		value: function onmousedown(e, element, key, listPath) {
+	_createClass(Theader, [{
+		key: 'onMousedown',
+		value: function onMousedown(e) {
+			var th = e.currentTarget.parentNode;
 			window.resize = {
 				column: this.props.configs.column,
 				pageX: e.pageX,
-				width: element.offsetWidth,
-				element: element,
-				key: key,
-				listPath: listPath
+				width: th.offsetWidth,
+				th: th,
+				index: e.currentTarget.getAttribute("data-index"),
+				listPath: this.props.configs.listPath
 			};
 			e.stopPropagation();
 		}
 	}, {
 		key: 'onOrderByEvent',
-		value: function onOrderByEvent(e, i, order) {
-			if (order) {
-				this.props.orderbyEvent(order !== 'asc' ? 'asc' : 'desc', i, this.props.configs);
+		value: function onOrderByEvent(e) {
+			var _props$configs2 = this.props.configs,
+			    orderby = _props$configs2.orderby,
+			    orderkey = _props$configs2.orderkey;
+
+
+			var key = e.currentTarget.getAttribute("data-key");
+			var order = 'asc';
+
+			if (key == orderkey) {
+				order = orderby == 'asc' ? 'desc' : 'asc';
 			}
+
+			this.props.updateConfigs(_extends({}, this.props.configs, {
+				orderkey: key,
+				orderby: order
+			}));
+			this.props.getList({
+				page: 1,
+				order: key + ',' + order
+			});
+		}
+	}, {
+		key: 'onCheckEvent',
+		value: function onCheckEvent(currentTarget) {
+			// this.props.checkedEvent(currentTarget.checked)
+			this.props.updateConfigs(_extends({}, this.props.configs, {
+				checked: currentTarget.checked
+			}));
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this9 = this;
+			var _this10 = this;
 
-			var _props5 = this.props,
-			    resizeThEvent = _props5.resizeThEvent,
-			    orderbyEvent = _props5.orderbyEvent,
-			    checkAllEvent = _props5.checkAllEvent,
-			    isCheckAll = _props5.isCheckAll;
 			var _props$configs3 = this.props.configs,
 			    column = _props$configs3.column,
-			    listPath = _props$configs3.listPath,
-			    checkboxs = _props$configs3.checkboxs;
+			    checkboxs = _props$configs3.checkboxs,
+			    orderby = _props$configs3.orderby,
+			    orderkey = _props$configs3.orderkey,
+			    checked = _props$configs3.checked;
 
 
 			var columns = column.map(function (v, i) {
-				var resize = v.resize ? _react2.default.createElement('span', { onClick: function onClick(e) {
-						e.stopPropagation();
-					}, onMouseDown: function onMouseDown(e) {
-						_this9.onmousedown(e, _this9.refs['resize_' + v.key], i, listPath);
-					}, className: 'resize' }) : '';
-				var order = v.order ? _react2.default.createElement('span', { onClick: function onClick(e) {
-						return _this9.onOrderByEvent(e, i, v.order);
-					}, className: 'order ' + v.order }) : '';
+				var resize = '',
+				    order = '';
+
+				if (v.resize) {
+					resize = _react2.default.createElement('span', { onClick: function onClick(e) {
+							e.stopPropagation();
+						}, onMouseDown: _this10.onMousedown, 'data-index': i, 'data-key': v.key, className: 'resize' });
+				}
+
+				if (v.order) {
+					order = _react2.default.createElement('span', { onClick: _this10.onOrderByEvent, className: 'order ' + (orderkey == v.key ? orderby : ''), 'data-key': v.key });
+				}
+
 				return _react2.default.createElement(
 					'th',
 					{
-						ref: "resize_" + v.key,
 						key: v.key,
-						'data-val': v.key,
+						'data-key': v.key,
 						style: {
 							width: v.width ? v.width + 'px' : 'auto',
 							display: v.visibility ? undefined : 'none'
@@ -7372,14 +7441,14 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 				);
 			});
 
-			var checkboxDom = checkboxs ? _react2.default.createElement(
+			var inputCheck = checkboxs ? _react2.default.createElement(
 				'th',
 				{
 					className: 'row-checkbox',
 					key: 'check-all'
 				},
-				_react2.default.createElement('input', { checked: isCheckAll, type: 'checkbox', ref: 'checkbox_all', onChange: function onChange(e) {
-						checkAllEvent(_this9.refs['checkbox_all']);
+				_react2.default.createElement('input', { checked: checked, type: 'checkbox', ref: 'checkbox_all', onChange: function onChange(e) {
+						_this10.onCheckEvent(_this10.refs['checkbox_all']);
 					} })
 			) : '';
 
@@ -7389,14 +7458,14 @@ var ListHeader = exports.ListHeader = function (_Component6) {
 				_react2.default.createElement(
 					'tr',
 					null,
-					checkboxDom,
+					inputCheck,
 					columns
 				)
 			);
 		}
 	}]);
 
-	return ListHeader;
+	return Theader;
 }(_react.Component);
 
 /**
@@ -7404,25 +7473,27 @@ var ListHeader = exports.ListHeader = function (_Component6) {
  */
 
 
-var ListBody = exports.ListBody = function (_Component7) {
-	_inherits(ListBody, _Component7);
+var Tbodyer = exports.Tbodyer = function (_Component7) {
+	_inherits(Tbodyer, _Component7);
 
-	function ListBody() {
-		_classCallCheck(this, ListBody);
+	function Tbodyer() {
+		_classCallCheck(this, Tbodyer);
 
-		return _possibleConstructorReturn(this, (ListBody.__proto__ || Object.getPrototypeOf(ListBody)).apply(this, arguments));
+		return _possibleConstructorReturn(this, (Tbodyer.__proto__ || Object.getPrototypeOf(Tbodyer)).apply(this, arguments));
 	}
 
-	_createClass(ListBody, [{
+	_createClass(Tbodyer, [{
+		key: 'checkEvent',
+		value: function checkEvent() {}
+	}, {
 		key: 'render',
 		value: function render() {
-			var _this11 = this;
+			var _this12 = this;
 
-			var _props6 = this.props,
-			    list = _props6.list,
-			    configs = _props6.configs,
-			    checkEvent = _props6.checkEvent,
-			    ischeck = _props6.ischeck;
+			var _props2 = this.props,
+			    list = _props2.list,
+			    configs = _props2.configs,
+			    checkedEvent = _props2.checkedEvent;
 
 
 			var lines = function lines(line, key) {
@@ -7443,16 +7514,16 @@ var ListBody = exports.ListBody = function (_Component7) {
 						)
 					);
 				});
-				console.log(_typeof(line.checked));
-				var checked = typeof line.checked === 'undefined' ? false : line.checked;
-				var checkboxDom = configs.checkboxs ? _react2.default.createElement(
+				//let checked =  typeof(line.checked) === 'undefined' ? false : line.checked
+				var checked = configs.checked ? true : false;
+				var inputCheck = configs.checkboxs ? _react2.default.createElement(
 					'td',
 					{ className: 'row-checkbox', key: 'check' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'td-cell' },
 						_react2.default.createElement('input', { value: line.id, checked: checked, type: 'checkbox', ref: "checkbox_" + line.id, onChange: function onChange(e) {
-								return checkEvent(e, _this11.refs['checkbox_' + line.id], line.id);
+								return _this12.checkEvent(e, _this12.refs['checkbox_' + line.id], line.id).bind(_this12);
 							} })
 					)
 				) : '';
@@ -7460,7 +7531,7 @@ var ListBody = exports.ListBody = function (_Component7) {
 				return _react2.default.createElement(
 					'tr',
 					{ key: key, className: 'animates' },
-					checkboxDom,
+					inputCheck,
 					columns
 				);
 			};
@@ -7477,7 +7548,7 @@ var ListBody = exports.ListBody = function (_Component7) {
 		}
 	}]);
 
-	return ListBody;
+	return Tbodyer;
 }(_react.Component);
 
 /***/ }),
@@ -7835,10 +7906,16 @@ var _DevTools2 = _interopRequireDefault(_DevTools);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//引入store配置
-console.log("reducer:", _index2.default);
+//给增强后的store传入reducer
+
 
 //引入路由配置
+
+
+//引入store配置
+var store = (0, _configureStore2.default)(_index2.default);
+
+//引入Redux调试工具DevTools
 
 
 //引入reducers集合
@@ -7850,12 +7927,6 @@ console.log("reducer:", _index2.default);
 
 //引入Action创建函数
 
-
-//引入Redux调试工具DevTools
-
-
-//给增强后的store传入reducer
-var store = (0, _configureStore2.default)(_index2.default);
 
 console.log("state", store);
 
@@ -7880,7 +7951,7 @@ document.addEventListener('mousemove', function (e) {
             element = _window$resize.element,
             pageX = _window$resize.pageX,
             width = _window$resize.width,
-            key = _window$resize.key,
+            index = _window$resize.index,
             listPath = _window$resize.listPath;
 
         if (width + e.pageX - pageX > 60) {
@@ -7895,10 +7966,10 @@ document.addEventListener('mouseup', function (e) {
         var _window$resize2 = window.resize,
             column = _window$resize2.column,
             element = _window$resize2.element,
-            key = _window$resize2.key,
+            index = _window$resize2.index,
             listPath = _window$resize2.listPath;
 
-        column[key].width = element.offsetWidth;
+        column[index].width = element.offsetWidth;
         store.dispatch({
             type: listPath + "_resize_th",
             payload: {
@@ -20216,10 +20287,6 @@ var _adminlist = __webpack_require__(669);
 var _termlist = __webpack_require__(670);
 
 //将routerReducer一起合并管理
-console.log("login", _common.common);
-
-//引入reducer
-//利用combineReducers合并reducers
 exports.default = (0, _redux.combineReducers)({
 
 	/* your reducers */
@@ -20231,6 +20298,9 @@ exports.default = (0, _redux.combineReducers)({
 
 	routing: _reactRouterRedux.routerReducer
 });
+
+//引入reducer
+//利用combineReducers合并reducers
 
 /***/ }),
 /* 666 */
@@ -20294,6 +20364,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入action类型常量名
+//引入action类型常量名
 
 
 exports.header = header;
@@ -20329,10 +20400,9 @@ var headerInitialState = {
     }, {
         text: '待办事项4'
     }],
-    admin: {
-        avatar: 'http://laravel.xuehtml.com/public/images/admin.png',
-        name: 'alvinhtml@gmail.com'
-    },
+    avatar: 'http://laravel.xuehtml.com/public/images/admin.png',
+    adminemail: '',
+    adminname: '',
     adminActions: [{
         text: '个人中心',
         link: '/api/admin/logout'
@@ -20355,7 +20425,8 @@ function header() {
 
     //根据不同的action type进行state的更新
     switch (action.type) {
-
+        case _constants.GET_AUTH_INFO:
+            return _extends({}, state, action.payload);
         default:
             return _extends({}, state);
     }
@@ -20441,48 +20512,50 @@ var adminlistInitialState = {
     }],
     list: [], //列表数据
     count: 64, //列表总条数
-    isCheckAll: false,
     //列表配置
     configs: {
         listPath: 'adminlist',
         page: 1, //当前页
         limit: 20, //单页显示条数
-        searchMode: '精确搜索', //搜索模式
-        checkboxs: true, //选择框 0:无, 1:有
+        searchMode: 0, //搜索模式
+        checkboxs: true, //选择框 0->无, 1->有
+        checked: false, //false->无, all->全选, []->单多选
         search: '',
-        actions: [],
+        actions: [], //列表单条操作
+        orderkey: '', //排序字段
+        orderby: '', //排序方式
         column: [{
             key: 'id',
             title: '序号',
-            order: 'order',
+            order: true,
             visibility: true,
             width: 60,
             resize: 0
         }, {
             key: 'name',
             title: '名称',
-            order: 'order',
+            order: true,
             visibility: true,
             width: 200,
             resize: 1
         }, {
             key: 'email',
             title: '邮箱',
-            order: 'order',
+            order: true,
             visibility: false,
             width: 200,
             resize: 1
         }, {
             key: 'type',
             title: '类型',
-            order: 'order',
+            order: true,
             visibility: false,
             width: 120,
             resize: 0
         }, {
             key: 'ouname',
             title: '部门',
-            order: 'order',
+            order: true,
             visibility: false,
             width: 200,
             resize: 0
@@ -20495,7 +20568,7 @@ var adminlistInitialState = {
         }, {
             key: 'state',
             title: '状态',
-            order: 'order',
+            order: true,
             visibility: false,
             width: 200,
             resize: 0
@@ -20621,8 +20694,6 @@ exports.termlist = termlist;
 
 var _constants = __webpack_require__(26);
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 //初始化状态
 var termlistInitialState = {
     isFetching: 0,
@@ -20727,85 +20798,6 @@ function termlist() {
 
     //根据不同的action type进行state的更新
     switch (action.type) {
-        case _constants.GET_ADMIN_LIST:
-            return _extends({}, state, action.payload);
-        case 'termlist_resize_th':
-            configs = _extends({}, state.configs, action.payload);
-            return _extends({}, state, { configs: configs });
-        case _constants.UPDATE_LIST_CONFIGS:
-            configs = _extends({}, state.configs, action.payload);
-            return _extends({}, state, { configs: configs });
-        case _constants.CHANGE_LIST_CHECKBOX:
-            if (action.path === "termlist") {
-                if (action.payload.hasOwnProperty("isCheckAll")) {
-                    //参数为全选的时候
-                    var list = [];
-                    var _iteratorNormalCompletion = true;
-                    var _didIteratorError = false;
-                    var _iteratorError = undefined;
-
-                    try {
-                        for (var _iterator = state.list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                            var v = _step.value;
-
-                            v.checked = action.payload.isCheckAll;
-                        }
-                    } catch (err) {
-                        _didIteratorError = true;
-                        _iteratorError = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion && _iterator.return) {
-                                _iterator.return();
-                            }
-                        } finally {
-                            if (_didIteratorError) {
-                                throw _iteratorError;
-                            }
-                        }
-                    }
-
-                    return _extends({}, state, action.payload);
-                } else {
-                    //参数为单选的时候
-                    var isCheckAll = true;
-                    var _iteratorNormalCompletion2 = true;
-                    var _didIteratorError2 = false;
-                    var _iteratorError2 = undefined;
-
-                    try {
-                        for (var _iterator2 = state.list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                            var _v = _step2.value;
-
-                            if (action.payload.id == _v.id) {
-                                _v.checked = action.payload.checked;
-                            }
-                            //只要有一个复选框为 false, 全选复选框就会为 false
-                            console.log(_v.id, _v.checked);
-                            if (_v.checked === false || _v.checked === undefined) {
-                                isCheckAll = false;
-                            }
-                        }
-                    } catch (err) {
-                        _didIteratorError2 = true;
-                        _iteratorError2 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                _iterator2.return();
-                            }
-                        } finally {
-                            if (_didIteratorError2) {
-                                throw _iteratorError2;
-                            }
-                        }
-                    }
-
-                    return _extends({}, state, { list: [].concat(_toConsumableArray(state.list)) }, { isCheckAll: isCheckAll });
-                }
-            }
-            configs = _extends({}, state.configs, action.payload);
-            return _extends({}, state, { configs: configs });
         default:
             return _extends({}, state);
     }
@@ -27091,16 +27083,9 @@ var AdminListUI = function (_Component) {
 			    configs = _props.configs,
 			    isCheckAll = _props.isCheckAll;
 			var _props2 = this.props,
-			    resizeThEvent = _props2.resizeThEvent,
-			    setPageEvent = _props2.setPageEvent,
 			    toolsClickEvent = _props2.toolsClickEvent,
-			    setSearchMode = _props2.setSearchMode,
-			    searchEvent = _props2.searchEvent,
-			    changeLimitEvent = _props2.changeLimitEvent,
-			    changeColumnEvent = _props2.changeColumnEvent,
-			    orderbyEvent = _props2.orderbyEvent,
-			    checkEvent = _props2.checkEvent,
-			    checkAllEvent = _props2.checkAllEvent;
+			    getList = _props2.getList,
+			    updateConfigs = _props2.updateConfigs;
 
 
 			return _react2.default.createElement(
@@ -27249,7 +27234,7 @@ var AdminListUI = function (_Component) {
 								{ icon: 'icon-wrench', bgColor: 'bg-red' },
 								_react2.default.createElement(_dropdown.Dropmenu, { options: tools, clickEvent: toolsClickEvent })
 							),
-							_react2.default.createElement(_common.ListSearcher, { search: 'search...', searchEvent: searchEvent, configs: configs, setSearchMode: setSearchMode })
+							_react2.default.createElement(_common.Searcher, { getList: getList, updateConfigs: updateConfigs, configs: configs })
 						),
 						_react2.default.createElement(
 							'div',
@@ -27264,7 +27249,7 @@ var AdminListUI = function (_Component) {
 								{ 'data-content': '\u65B0\u5EFA', to: '/admin/form', className: 'tools bg-teal ititle' },
 								_react2.default.createElement('i', { className: 'icon-plus' })
 							),
-							_react2.default.createElement(_common.ListConfiger, { changeLimitEvent: changeLimitEvent, changeColumnEvent: changeColumnEvent, page: configs.page, configs: configs })
+							_react2.default.createElement(_common.Configer, { getList: getList, updateConfigs: updateConfigs, configs: configs })
 						)
 					),
 					_react2.default.createElement(
@@ -27273,11 +27258,11 @@ var AdminListUI = function (_Component) {
 						_react2.default.createElement(
 							'table',
 							{ className: 'olist-table', id: 'olist_table' },
-							_react2.default.createElement(_common.ListHeader, { orderbyEvent: orderbyEvent, resizeThEvent: resizeThEvent, checkAllEvent: checkAllEvent, isCheckAll: isCheckAll, configs: configs }),
-							_react2.default.createElement(_common.ListBody, { list: list, configs: configs, checkEvent: checkEvent })
+							_react2.default.createElement(_common.Theader, { getList: getList, updateConfigs: updateConfigs, configs: configs, isCheckAll: isCheckAll }),
+							_react2.default.createElement(_common.Tbodyer, { list: list, configs: configs })
 						)
 					),
-					_react2.default.createElement(_common.PageList, { setPageEvent: setPageEvent, count: parseInt(count), configs: configs })
+					_react2.default.createElement(_common.PageList, { getList: getList, updateConfigs: updateConfigs, count: parseInt(count), configs: configs })
 				)
 			);
 		}
@@ -27329,108 +27314,129 @@ var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
 	return state.adminlist;
 }, function (dispatch, ownProps) {
 
-	var updateConfigs = function updateConfigs(configs) {
-		(0, _actions.makePost)('/api/setting/list_configs', {
-			listPath: configs.listPath,
-			configs: JSON.stringify(configs)
-		});
-	};
+	// const updateConfigs = (configs) => {
+	// 	makePost('/api/setting/list_configs', {
+	// 		listPath: configs.listPath,
+	// 		configs: JSON.stringify(configs)
+	// 	})
+	// }
 	return {
-		getList: function getList(o) {
-			dispatch((0, _actions.getAdminList)(o));
+		// getList: (o) => {
+		// 	dispatch(getAdminList(o))
+		// },
+		//获取列表
+		getList: function getList(where, configs) {
+			dispatch((0, _actions.getAdminList)(where));
 		},
-		toolsClickEvent: function toolsClickEvent(v) {
-			//
+		//更新配置
+		updateConfigs: function updateConfigs(configs) {
+			//更新数据库配置
+			(0, _actions.makePost)('/api/setting/list_configs', {
+				listPath: configs.listPath,
+				configs: JSON.stringify(configs)
+			});
+			//更新store配置
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, configs, 'adminlist'));
 		},
-		//排序
-		orderbyEvent: function orderbyEvent(v, key, configs) {
-			var column = configs.column;
+		//checked
+		// checkedEvent: (checked, action) => {
+		// 	dispatch(ActionCreator(CHANGE_LIST_CHECKBOX, {
+		// 		isCheckAll: checked
+		// 	}, 'adminlist'))
+		// },
+		toolsClickEvent: function toolsClickEvent(v) {}
+		//
 
-			for (var i = 0; i < column.length; i++) {
-				console.log(key, i);
-				if (column[i].order) {
-					if (i == key) {
-						column[i].order = v;
-					} else {
-						column[i].order = 'order';
-					}
-				}
-			}
-
-			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
-				column: column
-			}, 'adminlist'));
-
-			updateConfigs(configs);
-
-			dispatch((0, _actions.getAdminList)({
-				order: column[key].key + ',' + v
-			}));
-		},
-		//全选
-		checkAllEvent: function checkAllEvent(element) {
-			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_LIST_CHECKBOX, {
-				isCheckAll: element.checked
-			}, 'adminlist'));
-		},
-		//单选
-		checkEvent: function checkEvent(e, element, id) {
-			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_LIST_CHECKBOX, {
-				//isCheckAll: element.checked
-				id: id,
-				checked: element.checked
-			}, 'adminlist'));
-		},
-		//搜索模式
-		setSearchMode: function setSearchMode(modeValue) {
-			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
-				searchMode: modeValue
-			}, 'adminlist'));
-		},
-		//搜索
-		searchEvent: function searchEvent(search) {
-			dispatch((0, _actions.getAdminList)({
-				search: search
-			}));
-		},
-		//改变页码
-		setPageEvent: function setPageEvent(page) {
-			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
-				page: page
-			}, 'adminlist'));
-			dispatch((0, _actions.getAdminList)({
-				page: page
-			}));
-		},
-		//改变每页显示条数
-		changeLimitEvent: function changeLimitEvent(v, configs) {
-
-			configs.limit = parseInt(v);
-
-			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
-				limit: v
-			}, 'adminlist'));
-
-			updateConfigs(configs);
-
-			dispatch((0, _actions.getAdminList)({
-				page: configs.page,
-				limit: configs.limit
-			}));
-		},
-		//改变表格列宽
-		changeColumnEvent: function changeColumnEvent(key, configs) {
-
-			var column = configs.column;
-
-			column[key].visibility = column[key].visibility ? false : true;
-
-			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, {
-				column: column
-			}, 'adminlist'));
-
-			updateConfigs(configs);
-		}
+		// //排序
+		// orderbyEvent: (v, key, configs) => {
+		// 	let column = configs.column
+		//
+		// 	for (let i = 0; i < column.length; i++) {
+		// 		console.log(key, i)
+		// 		if (column[i].order) {
+		// 			if (i == key) {
+		// 				column[i].order = v
+		// 			} else {
+		// 				column[i].order = 'order'
+		// 			}
+		// 		}
+		// 	}
+		//
+		// 	dispatch(ActionCreator(UPDATE_LIST_CONFIGS, {
+		// 		column
+		// 	}, 'adminlist'))
+		//
+		// 	updateConfigs(configs)
+		//
+		// 	dispatch(getAdminList({
+		// 		order: column[key].key + ',' + v
+		// 	}))
+		// },
+		// //全选
+		// checkAllEvent: (element) => {
+		// 	dispatch(ActionCreator(CHANGE_LIST_CHECKBOX, {
+		// 		isCheckAll: element.checked
+		// 	}, 'adminlist'))
+		// },
+		// //单选
+		// checkEvent: (e, element, id) => {
+		// 	dispatch(ActionCreator(CHANGE_LIST_CHECKBOX, {
+		// 		//isCheckAll: element.checked
+		// 		id,
+		// 		checked: element.checked
+		// 	}, 'adminlist'))
+		// },
+		// //搜索模式
+		// setSearchMode: (modeValue) => {
+		// 	dispatch(ActionCreator(UPDATE_LIST_CONFIGS, {
+		// 		searchMode: modeValue
+		// 	}, 'adminlist'))
+		// },
+		// //搜索
+		// searchEvent: (search) => {
+		// 	dispatch(getAdminList({
+		// 		search
+		// 	}))
+		// },
+		// //改变页码
+		// setPageEvent: (page) => {
+		// 	dispatch(ActionCreator(UPDATE_LIST_CONFIGS, {
+		// 		page
+		// 	}, 'adminlist'))
+		// 	dispatch(getAdminList({
+		// 		page
+		// 	}))
+		// },
+		// //改变每页显示条数
+		// changeLimitEvent: (v, configs) => {
+		//
+		// 	configs.limit = parseInt(v)
+		//
+		// 	dispatch(ActionCreator(UPDATE_LIST_CONFIGS, {
+		// 		limit: v
+		// 	}, 'adminlist'))
+		//
+		// 	updateConfigs(configs)
+		//
+		// 	dispatch(getAdminList({
+		// 		page: configs.page,
+		// 		limit: configs.limit
+		// 	}))
+		//
+		// },
+		// //改变表格列宽
+		// changeColumnEvent: (key, configs) => {
+		//
+		// 	let column = configs.column
+		//
+		// 	column[key].visibility = column[key].visibility ? false : true
+		//
+		// 	dispatch(ActionCreator(UPDATE_LIST_CONFIGS, {
+		// 		column
+		// 	}, 'adminlist'))
+		//
+		// 	updateConfigs(configs)
+		// }
 	};
 })(AdminListUI);
 
@@ -27821,15 +27827,18 @@ var HeaderUI = function (_Component) {
 		value: function render() {
 			var _props = this.props,
 			    reminds = _props.reminds,
-			    remindClickEvent = _props.remindClickEvent,
 			    messages = _props.messages,
-			    messagesClickEvent = _props.messagesClickEvent,
 			    tasks = _props.tasks,
-			    tasksClickEvent = _props.tasksClickEvent,
 			    adminActions = _props.adminActions,
-			    adminActionsClickEvent = _props.adminActionsClickEvent,
-			    admin = _props.admin,
+			    adminname = _props.adminname,
+			    adminemail = _props.adminemail,
+			    avatar = _props.avatar,
 			    logined = _props.logined;
+			var _props2 = this.props,
+			    remindClickEvent = _props2.remindClickEvent,
+			    messagesClickEvent = _props2.messagesClickEvent,
+			    tasksClickEvent = _props2.tasksClickEvent,
+			    adminActionsClickEvent = _props2.adminActionsClickEvent;
 			//console.log("8.1", common);
 
 			if (logined !== true) {}
@@ -27893,10 +27902,10 @@ var HeaderUI = function (_Component) {
 								_react2.default.createElement(
 									'span',
 									{ className: 'avatar' },
-									_react2.default.createElement('img', { src: admin.avatar })
+									_react2.default.createElement('img', { src: avatar })
 								),
 								' ',
-								admin.name
+								adminname
 							),
 							_react2.default.createElement(
 								'div',
