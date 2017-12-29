@@ -112,9 +112,13 @@ class AuthController extends Controller
 
             //return redirect("/api/admin");
 
+            $admin = Auth::guard('admin')->user();
+
             //返回登录成功后的 json 信息
             $result = Error::make(0);
             $result['logined'] = true;
+            $result['adminname'] = $admin['name'];
+            $result['adminemail'] = $admin['email'];
             return response()->json($result);
 
 

@@ -62,6 +62,46 @@ if (process.env.NODE_ENV !== 'production') {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/*!
+ * Action 常量
+ *
+ * Action 常量命名规范
+ * 以动词开头 [GET_, POST_, HIDE_, SHOW_, TOGGLE_, ADD_, EDIT_, REMOVE_, SET_]
+ *
+ */
+
+var ERROR = exports.ERROR = 'ERROR';
+var SUCCESS = exports.SUCCESS = 'SUCCESS';
+
+//common
+var GET_AUTH_INFO = exports.GET_AUTH_INFO = 'GET_AUTH_INFO';
+
+//login
+var LOGIN = exports.LOGIN = 'LOGIN';
+var LOGOUT = exports.LOGOUT = 'LOGOUT';
+
+//list config
+var UPDATE_LIST_CONFIGS = exports.UPDATE_LIST_CONFIGS = 'UPDATE_LIST_CONFIGS';
+
+//list checkbox
+var CHANGE_LIST_CHECKBOX = exports.CHANGE_LIST_CHECKBOX = 'CHANGE_LIST_CHECKBOX';
+
+//admin list
+var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
+var GET_ADMIN_INFO = exports.GET_ADMIN_INFO = 'GET_ADMIN_INFO';
+var POST_ADMIN_INFO = exports.POST_ADMIN_INFO = 'POST_ADMIN_INFO';
+var DELETE_ADMIN = exports.DELETE_ADMIN = 'DELETE_ADMIN';
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 exports.__esModule = true;
 
 var _assign = __webpack_require__(594);
@@ -85,7 +125,7 @@ exports.default = _assign2.default || function (target) {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var store      = __webpack_require__(133)('wks')
@@ -101,46 +141,11 @@ var $exports = module.exports = function(name){
 $exports.store = store;
 
 /***/ }),
-/* 17 */,
 /* 18 */,
 /* 19 */,
 /* 20 */,
 /* 21 */,
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/*!
- * Action 常量
- *
- * Action 常量命名规范
- * 以动词开头 [GET_, POST_, HIDE_, SHOW_, TOGGLE_, ADD_, EDIT_, REMOVE_, SET_]
- *
- */
-
-var ERROR = exports.ERROR = 'ERROR';
-var SUCCESS = exports.SUCCESS = 'SUCCESS';
-
-//common
-var GET_AUTH_INFO = exports.GET_AUTH_INFO = 'GET_AUTH_INFO';
-
-//login
-var POST_LOGIN = exports.POST_LOGIN = 'POST_LOGIN';
-var GET_LOGOUT = exports.GET_LOGOUT = 'GET_LOGOUT';
-
-//list config
-var UPDATE_LIST_CONFIGS = exports.UPDATE_LIST_CONFIGS = 'UPDATE_LIST_CONFIGS';
-var CHANGE_LIST_CHECKBOX = exports.CHANGE_LIST_CHECKBOX = 'CHANGE_LIST_CHECKBOX';
-
-//admin list
-var GET_ADMIN_LIST = exports.GET_ADMIN_LIST = 'GET_ADMIN_LIST';
-
-/***/ }),
+/* 22 */,
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -398,7 +403,9 @@ module.exports = function(it, key){
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getAdminList = exports.authInfo = exports.logoutFetch = exports.loginFetch = exports.makePost = exports.ActionCreator = undefined;
+exports.ActionPost = exports.ActionGet = exports.FetchPost = exports.ActionCreator = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入isomorphic-fetch API来进行Ajax
 
@@ -410,7 +417,7 @@ var _isomorphicFetch = __webpack_require__(203);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -427,7 +434,7 @@ function formatParams(data) {
     return arr.join("&");
 }
 
-//Action Creators 生成器
+//Action Creators 生成器 [生成 action 函数, 不包含任何请求]
 var ActionCreator = exports.ActionCreator = function ActionCreator(type, body, path) {
     //因为使用了 redux-thunk 中间件, action 创建函数应当反回一个函数 (dispatch,getState) => {}
     return function (dispatch, getState) {
@@ -439,82 +446,8 @@ var ActionCreator = exports.ActionCreator = function ActionCreator(type, body, p
     };
 };
 
-//异步Action函数创建器 POST请求
-var makePostActionCreator = function makePostActionCreator(type, url) {
-
-    return function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return function (dispatch, getState) {
-            var _ref = [].concat(args),
-                body = _ref[0],
-                path = _ref[1],
-                error = _ref[2];
-
-            //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
-
-
-            dispatch({
-                type: type,
-                payload: {
-                    isFetching: true
-                },
-                path: path
-            });
-
-            //发起fetch请求
-            return (0, _isomorphicFetch2.default)(url, {
-                method: "POST",
-                //请求带上cookie
-                credentials: 'include',
-                headers: {
-                    'Accept': 'application/json, text/javascript, */*; q=0.01',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': window.Laravel.csrfToken
-                },
-                body: JSON.stringify(_extends({ _token: window.Laravel.csrfToken }, body))
-            })
-
-            //判断HTTP请求结果，200-299 表示请求成功
-            .then(function (response) {
-                if (response.status >= 200 && response.status < 300) {
-                    return response;
-                } else {
-                    var error = new Error(response.statusText);
-                    error.response = response;
-                    throw error;
-                }
-            })
-
-            //生成JSON.parse(responseText)的结果
-            .then(function (response) {
-                return response.json();
-            })
-
-            //获取并处理请求结果
-            .then(function (json) {
-                console.log("then json");
-                return dispatch({
-                    type: type,
-                    path: path,
-                    payload: _extends({
-                        isFetching: false
-                    }, json)
-                });
-            })
-
-            //处理请求错误
-            .catch(function (error) {
-                //
-            });
-        };
-    };
-};
-
-//无Action POST请求
-var makePost = exports.makePost = function makePost(url, body) {
+//POST请求
+var FetchPost = exports.FetchPost = function FetchPost(url, body, callback) {
 
     //发起fetch请求
     return (0, _isomorphicFetch2.default)(url, {
@@ -547,7 +480,9 @@ var makePost = exports.makePost = function makePost(url, body) {
 
     //获取并处理请求结果
     .then(function (json) {
-        console.log("状态码:", json.error, json.message);
+        if (typeof callback === "function") {
+            callback(json);
+        }
     })
 
     //处理请求错误
@@ -557,93 +492,242 @@ var makePost = exports.makePost = function makePost(url, body) {
 };
 
 //异步Action函数创建器 GET请求
-var makeGetActionCreator = function makeGetActionCreator(type, url) {
+var ActionGet = exports.ActionGet = function ActionGet(type, url) {
+    for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        args[_key - 2] = arguments[_key];
+    }
 
-    return function () {
-        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-        }
+    var _ref = [].concat(args),
+        body = _ref[0],
+        path = _ref[1],
+        callback = _ref[2];
 
-        return function (dispatch, getState) {
-            var _ref2 = [].concat(args),
-                body = _ref2[0],
-                path = _ref2[1],
-                error = _ref2[2];
+    if ((typeof body === 'undefined' ? 'undefined' : _typeof(body)) === 'object') {
+        url = url + '?' + formatParams(body);
+    }
 
-            //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
+    if (typeof body === 'string') {
+        callback = path;
+        path = body;
+    }
 
+    return function (dispatch, getState) {
 
-            dispatch({
+        //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
+        dispatch({
+            type: type,
+            payload: {
+                isFetching: true
+            },
+            path: path
+        });
+
+        //发起fetch请求
+        return (0, _isomorphicFetch2.default)(url, {
+            method: "GET",
+            //请求带上cookie
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.Laravel.csrfToken
+            }
+        })
+
+        //判断HTTP请求结果，200-299 表示请求成功
+        .then(function (response) {
+            if (response.status >= 200 && response.status < 300) {
+                return response;
+            } else {
+                var error = new Error(response.statusText);
+                error.response = response;
+                throw error;
+            }
+        })
+
+        //生成JSON.parse(responseText)的结果
+        .then(function (response) {
+            return response.json();
+        })
+
+        //获取并处理请求结果
+        .then(function (json) {
+            if (typeof callback === "function") {
+                callback(json);
+            }
+            return dispatch({
                 type: type,
-                payload: {
-                    isFetching: true
-                },
+                payload: _extends({
+                    isFetching: false
+                }, json),
                 path: path
             });
+        })
 
-            //将json参数转为url参数
-            var urlParams = body ? formatParams(body) : '';
-
-            //发起fetch请求
-            return (0, _isomorphicFetch2.default)(url + '?' + urlParams, {
-                method: "GET",
-                //请求带上cookie
-                credentials: 'include',
-                headers: {
-                    'Accept': 'application/json, text/javascript, */*; q=0.01',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': window.Laravel.csrfToken
-                }
-            })
-
-            //判断HTTP请求结果，200-299 表示请求成功
-            .then(function (response) {
-                if (response.status >= 200 && response.status < 300) {
-                    return response;
-                } else {
-                    var error = new Error(response.statusText);
-                    error.response = response;
-                    throw error;
-                }
-            })
-
-            //生成JSON.parse(responseText)的结果
-            .then(function (response) {
-                return response.json();
-            })
-
-            //获取并处理请求结果
-            .then(function (json) {
-                return dispatch({
-                    type: type,
-                    path: path,
-                    payload: _extends({
-                        isFetching: false
-                    }, json)
-                });
-            })
-
-            //处理请求错误
-            .catch(function (error) {
-                //
-            });
-        };
+        //处理请求错误
+        .catch(function (error) {
+            //
+        });
     };
 };
 
-//feps(body, payload, path)
+//异步Action函数创建器 POST请求
+var ActionPost = exports.ActionPost = function ActionPost(type, url, body, path, callback) {
 
+    return function (dispatch, getState) {
 
-//发送登录请求
-var loginFetch = exports.loginFetch = makePostActionCreator(_constants.POST_LOGIN, '/api/admin/login', 'body', 'path', 'message');
-//退出登录
-var logoutFetch = exports.logoutFetch = makeGetActionCreator(_constants.GET_LOGOUT, '/api/admin/logout', 'body', 'path', 'message');
+        //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
+        dispatch({
+            type: type,
+            payload: {
+                isFetching: true
+            },
+            path: path
+        });
+        //发起fetch请求
+        return (0, _isomorphicFetch2.default)(url, {
+            method: "POST",
+            //请求带上cookie
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.Laravel.csrfToken
+            },
+            body: JSON.stringify(_extends({ _token: window.Laravel.csrfToken }, body))
+        })
 
-//获取认证信息
-var authInfo = exports.authInfo = makeGetActionCreator(_constants.GET_AUTH_INFO, '/api/authinfo', 'path', 'message');
+        //判断HTTP请求结果，200-299 表示请求成功
+        .then(function (response) {
+            if (response.status >= 200 && response.status < 300) {
+                return response;
+            } else {
+                var error = new Error(response.statusText);
+                error.response = response;
+                throw error;
+            }
+        })
 
-//获取管理员列表
-var getAdminList = exports.getAdminList = makeGetActionCreator(_constants.GET_ADMIN_LIST, '/api/admin/list', 'body', 'path', 'message');
+        //生成JSON.parse(responseText)的结果
+        .then(function (response) {
+            return response.json();
+        })
+
+        //获取并处理请求结果
+        .then(function (json) {
+            if (typeof callback === "function") {
+                callback(json);
+            }
+            return dispatch({
+                type: type,
+                payload: _extends({
+                    isFetching: false
+                }, json),
+                path: path
+            });
+        })
+
+        //处理请求错误
+        .catch(function (error) {
+            //
+        });
+    };
+};
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+// //异步Action函数创建器 GET请求
+// const makeGetActionCreator = (type, url, ...argNames) => {
+//
+//     return (...args) => (dispatch, getState) => {
+//
+//         let [body, path, error] = [...args]
+//
+//         //第一次dispatch, 表示将要发起fetch，Action创建函数会更新对应的isFetching为true
+//         dispatch({
+//             type: type,
+//             payload: {
+//                 isFetching: true,
+//             },
+//             path: path
+//         })
+//
+//         //将json参数转为url参数
+//         let urlParams = body ? formatParams(body) : '';
+//
+//         //发起fetch请求
+//         return fetch(url + '?' + urlParams, {
+//             method: "GET",
+//             //请求带上cookie
+//             credentials: 'include',
+//             headers: {
+//                 'Accept': 'application/json, text/javascript, */*; q=0.01',
+//                 'Content-Type': 'application/json',
+//                 'X-CSRF-TOKEN': window.Laravel.csrfToken
+//             }
+//         })
+//
+//         //判断HTTP请求结果，200-299 表示请求成功
+//         .then(response => {
+//             if (response.status >= 200 && response.status < 300) {
+//                 return response
+//             } else {
+//                 var error = new Error(response.statusText)
+//                 error.response = response
+//                 throw error
+//             }
+//         })
+//
+//         //生成JSON.parse(responseText)的结果
+//         .then(response => response.json())
+//
+//         //获取并处理请求结果
+//         .then(json => {
+//             return dispatch({
+//                 type: type,
+//                 path: path,
+//                 payload: {
+//                     isFetching: false,
+//                     ...json
+//                 }
+//             })
+//         })
+//
+//         //处理请求错误
+//         .catch(error => {
+//             //
+//         })
+//     }
+// }
+//
+// //feps(body, payload, path)
+//
+//
+// //发送登录请求
+// export const loginFetch = makePostActionCreator(POST_LOGIN, '/api/admin/login', 'body', 'path', 'message')
+// //退出登录
+// export const logoutFetch = makeGetActionCreator(GET_LOGOUT, '/api/admin/logout','body', 'path', 'message')
+//
+//
+// //获取认证信息
+// export const authInfo = makeGetActionCreator(GET_AUTH_INFO, '/api/authinfo', 'path', 'message')
+//
+// //获取管理员列表
+// export const getAdminList = makeGetActionCreator(GET_ADMIN_LIST, '/api/admin/list','body', 'path', 'message')
+// export const getAdminInfo = makeGetActionCreator(GET_ADMIN_INFO, '/api/admin/view','body', 'path', 'message')
 
 /***/ }),
 /* 43 */
@@ -737,7 +821,65 @@ module.exports = Object.keys || function keys(O){
 module.exports = { "default": __webpack_require__(598), __esModule: true };
 
 /***/ }),
-/* 50 */,
+/* 50 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(673);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(678);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(262);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(680);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(683);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(686);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(688);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(263);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(149);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(694);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(696);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(698);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(699);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
 /* 51 */,
 /* 52 */,
 /* 53 */,
@@ -823,65 +965,6 @@ module.exports = function(it){
 
 /***/ }),
 /* 62 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(673);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(678);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(262);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(680);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(683);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(686);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(688);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(263);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(149);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(694);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(696);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(698);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(699);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -948,7 +1031,7 @@ var createPath = exports.createPath = function createPath(location) {
 };
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1019,6 +1102,7 @@ var createPath = function createPath(location) {
 };
 
 /***/ }),
+/* 64 */,
 /* 65 */,
 /* 66 */,
 /* 67 */,
@@ -1298,7 +1382,7 @@ module.exports = function(KEY, exec){
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return locationsAreEqual; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_resolve_pathname__ = __webpack_require__(259);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_value_equal__ = __webpack_require__(260);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PathUtils__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PathUtils__ = __webpack_require__(63);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 
@@ -2012,7 +2096,7 @@ module.exports = (
 
 var def = __webpack_require__(28).f
   , has = __webpack_require__(37)
-  , TAG = __webpack_require__(16)('toStringTag');
+  , TAG = __webpack_require__(17)('toStringTag');
 
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
@@ -2026,7 +2110,7 @@ __webpack_require__(574);
 var global        = __webpack_require__(27)
   , hide          = __webpack_require__(44)
   , Iterators     = __webpack_require__(47)
-  , TO_STRING_TAG = __webpack_require__(16)('toStringTag');
+  , TO_STRING_TAG = __webpack_require__(17)('toStringTag');
 
 for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
   var NAME       = collections[i]
@@ -2040,7 +2124,7 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
 /* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.f = __webpack_require__(16);
+exports.f = __webpack_require__(17);
 
 /***/ }),
 /* 138 */
@@ -2109,7 +2193,7 @@ var _inherits2 = __webpack_require__(83);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -2475,7 +2559,7 @@ var _valueEqual = __webpack_require__(260);
 
 var _valueEqual2 = _interopRequireDefault(_valueEqual);
 
-var _PathUtils = __webpack_require__(63);
+var _PathUtils = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3006,7 +3090,7 @@ Object.assign(Query.prototype, {
     //检测是否包含某个 class
     hasClass: function hasClass(className) {
         //return new RegExp(' ' + className + ' ').test(' ' + this.nodeList[0].className + ' ')
-        return this.nodeList[0].contains(className);
+        return this.nodeList[0].classList.contains(className);
     },
 
 
@@ -3063,6 +3147,19 @@ Object.assign(Query.prototype, {
             top: getOffsetTop(this.nodeList[0]),
             left: getOffsetLeft(this.nodeList[0])
         };
+    },
+
+
+    //取值
+    val: function val() {
+        var element = this.nodeList[0];
+        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            return element.value;
+        }
+
+        if (element.tagName === 'SELECT') {
+            return element.options[element.selectedIndex].value;
+        }
     }
 });
 
@@ -3092,7 +3189,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(54);
+var _reactRouter = __webpack_require__(72);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3368,17 +3465,40 @@ exports.remove = exports.resize = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+//引入样式文件
+// import './less/miniui.less'
+// import './css/style.css'
+
+
+//引入Action创建函数
+
+
+//引入action类型常量名
+
+
+//引入store配置
+
+
+//引入reducers集合
+
+
+//引入路由配置
+
+
+//引入Redux调试工具DevTools
+
+
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = __webpack_require__(88);
 
-var _reactRedux = __webpack_require__(20);
-
-var _constants = __webpack_require__(22);
+var _reactRedux = __webpack_require__(21);
 
 var _actions = __webpack_require__(42);
+
+var _constants = __webpack_require__(15);
 
 var _configureStore = __webpack_require__(415);
 
@@ -3402,31 +3522,8 @@ var _query2 = _interopRequireDefault(_query);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//引入样式文件
-// import './less/miniui.less'
-// import './css/style.css'
-
-//引入Action创建函数
-
-
-//引入store配置
-
-
-//引入reducers集合
-
-
-//引入路由配置
-
-
-//引入Redux调试工具DevTools
-
-
 //给增强后的store传入reducer
 var store = (0, _configureStore2.default)(_index4.default);
-
-console.log("state", store);
 
 (0, _reactDom.render)(_react2.default.createElement(
     _reactRedux.Provider,
@@ -3477,7 +3574,6 @@ document.addEventListener('mousemove', function (e) {
         if (width + e.pageX - pageX > 60) {
             element.style.width = width + e.pageX - pageX + 'px';
         }
-        console.log("resize", resize);
     }
 
     //表格拖动
@@ -3568,8 +3664,6 @@ document.addEventListener('mousemove', function (e) {
             remove.pageX = e.pageX;
 
             mirrorArr.splice(_index, 0, mirrorArr.splice(_index + orientation, 1)[0]);
-
-            console.log("new:", [].concat(_toConsumableArray(mirrorArr)));
         }
     }
 });
@@ -3597,7 +3691,7 @@ document.addEventListener('mouseup', function (e) {
         });
 
         //更新数据库中的数据
-        (0, _actions.makePost)('/api/setting/list_configs', {
+        (0, _actions.FetchPost)('/api/setting/list_configs', {
             listPath: listPath,
             configs: JSON.stringify(configs)
         });
@@ -3616,8 +3710,6 @@ document.addEventListener('mouseup', function (e) {
             initial = remove.initial;
 
 
-        console.log(mirrorArr);
-
         mirror.className = "olist-table mirror";
         mirror.style.left = remove.position.left + 'px';
 
@@ -3634,7 +3726,7 @@ document.addEventListener('mouseup', function (e) {
             (0, _query2.default)("#olist_table").removeClass("moving");
 
             //更新数据库中的数据
-            (0, _actions.makePost)('/api/setting/list_configs', {
+            (0, _actions.FetchPost)('/api/setting/list_configs', {
                 listPath: _configs2.listPath,
                 configs: JSON.stringify(_extends({}, _configs2, {
                     column: newColumn
@@ -5420,7 +5512,7 @@ var _inherits2 = __webpack_require__(83);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -5635,7 +5727,7 @@ var LIBRARY        = __webpack_require__(127)
   , $iterCreate    = __webpack_require__(569)
   , setToStringTag = __webpack_require__(135)
   , getPrototypeOf = __webpack_require__(245)
-  , ITERATOR       = __webpack_require__(16)('iterator')
+  , ITERATOR       = __webpack_require__(17)('iterator')
   , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
   , FF_ITERATOR    = '@@iterator'
   , KEYS           = 'keys'
@@ -5829,7 +5921,7 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
 
 exports.__esModule = true;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -5964,7 +6056,7 @@ module.exports = { "default": __webpack_require__(602), __esModule: true };
 
 exports.__esModule = true;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -6017,7 +6109,7 @@ exports['default'] = JSONArrow;
 /***/ (function(module, exports, __webpack_require__) {
 
 var classof   = __webpack_require__(252)
-  , ITERATOR  = __webpack_require__(16)('iterator')
+  , ITERATOR  = __webpack_require__(17)('iterator')
   , Iterators = __webpack_require__(47);
 module.exports = __webpack_require__(9).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
@@ -6031,7 +6123,7 @@ module.exports = __webpack_require__(9).getIteratorMethod = function(it){
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = __webpack_require__(131)
-  , TAG = __webpack_require__(16)('toStringTag')
+  , TAG = __webpack_require__(17)('toStringTag')
   // ES3 wrong here
   , ARG = cof(function(){ return arguments; }()) == 'Arguments';
 
@@ -6069,7 +6161,7 @@ var _typeof2 = __webpack_require__(124);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -7054,7 +7146,7 @@ var nameShape = exports.nameShape = _propTypes2.default.oneOfType([_propTypes2.d
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.Tbodyer = exports.Theader = exports.Configer = exports.Searcher = exports.ListActioner = exports.PageList = exports.Crumbs = undefined;
+exports.FetchButton = exports.Tbodyer = exports.Theader = exports.Configer = exports.Searcher = exports.ListActioner = exports.PageList = exports.Crumbs = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -7064,7 +7156,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(54);
+var _reactRouterDom = __webpack_require__(50);
 
 var _query = __webpack_require__(153);
 
@@ -7073,6 +7165,8 @@ var _query2 = _interopRequireDefault(_query);
 var _index = __webpack_require__(204);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
 
@@ -7146,7 +7240,7 @@ var PageList = exports.PageList = function (_Component2) {
 		value: function setPageEvent(page) {
 			this.props.updateConfigs(_extends({}, this.props.configs, {
 				page: page
-			}));
+			}), true);
 
 			var where = {
 				page: page
@@ -7170,19 +7264,17 @@ var PageList = exports.PageList = function (_Component2) {
 			if (count > limit) {
 
 				//获取总页数
-				var _pageCount = count === 0 ? 0 : Math.ceil(count / limit);
-
-				//console.log("count-", pageCount , limit);
+				var pageCount = count === 0 ? 0 : Math.ceil(count / limit);
 
 				var begin = 1,
 				    //起始页
 				showPage = 10; //要显示的页码个数
 
-				if (_pageCount < 11) {
-					showPage = _pageCount;
+				if (pageCount < 11) {
+					showPage = pageCount;
 				} else {
 					if (page > 6) {
-						begin = _pageCount - page > 5 ? page - 4 : _pageCount - 9;
+						begin = pageCount - page > 5 ? page - 4 : pageCount - 9;
 					}
 				}
 
@@ -7224,7 +7316,7 @@ var PageList = exports.PageList = function (_Component2) {
 					_react2.default.createElement(
 						'em',
 						null,
-						_pageCount
+						pageCount
 					),
 					'\u9875 \u8F6C\u5230 ',
 					_react2.default.createElement('input', { onKeyPress: this.inputEnterEvent, type: 'text', onChange: function onChange(n) {
@@ -7249,7 +7341,7 @@ var PageList = exports.PageList = function (_Component2) {
 					_react2.default.createElement(
 						'a',
 						{ className: 'page-next animates', onClick: function onClick(e) {
-								return _this3.setPageEvent(page + 1 < _pageCount ? page + 1 : _pageCount);
+								return _this3.setPageEvent(page + 1 < pageCount ? page + 1 : pageCount);
 							} },
 						_react2.default.createElement('i', { className: 'icon-arrow-right' })
 					)
@@ -7259,15 +7351,15 @@ var PageList = exports.PageList = function (_Component2) {
 					'div',
 					{ className: 'pagelist' },
 					_react2.default.createElement(
-						'b',
+						'em',
 						null,
 						count
 					),
 					'\u6761\u4FE1\u606F \u5171',
 					_react2.default.createElement(
-						'b',
+						'em',
 						null,
-						pageCount
+						1
 					),
 					'\u9875'
 				);
@@ -7356,7 +7448,6 @@ var Searcher = exports.Searcher = function (_Component4) {
 	_createClass(Searcher, [{
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
-			console.log("sv: ", this.searchValue.value, nextProps.configs.search);
 			this.searchValue.value = nextProps.configs.search;
 		}
 	}, {
@@ -7378,7 +7469,7 @@ var Searcher = exports.Searcher = function (_Component4) {
 		value: function searchSubmitEvent(event) {
 			this.props.updateConfigs(_extends({}, this.props.configs, {
 				search: this.searchValue.value
-			}));
+			}), true);
 			this.props.getList({
 				search: this.searchValue.value
 			});
@@ -7675,6 +7766,13 @@ var Configer = exports.Configer = function (_Component5) {
 	}
 
 	_createClass(Configer, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			this.props.getList({
+				page: 1
+			});
+		}
+	}, {
 		key: 'handleClick',
 		value: function handleClick(event) {
 			this.setState({
@@ -7690,7 +7788,7 @@ var Configer = exports.Configer = function (_Component5) {
 			var limit = e.currentTarget.getAttribute("data-val");
 			this.props.updateConfigs(_extends({}, this.props.configs, {
 				limit: limit
-			}));
+			}), true);
 			this.props.getList({
 				page: 1,
 				limit: limit
@@ -7704,7 +7802,7 @@ var Configer = exports.Configer = function (_Component5) {
 		value: function changeColumnEvent(e) {
 			var i = e.currentTarget.getAttribute("data-val");
 			this.props.configs.column[i].visibility = !this.props.configs.column[i].visibility;
-			this.props.updateConfigs(_extends({}, this.props.configs));
+			this.props.updateConfigs(_extends({}, this.props.configs), true);
 		}
 	}, {
 		key: 'render',
@@ -7808,34 +7906,60 @@ var Theader = exports.Theader = function (_Component6) {
 		key: 'onOrderByEvent',
 		value: function onOrderByEvent(e) {
 			e.stopPropagation();
-			var _props$configs2 = this.props.configs,
-			    orderby = _props$configs2.orderby,
-			    orderkey = _props$configs2.orderkey;
-
-
+			var order = this.props.configs.order;
 			var key = e.currentTarget.getAttribute("data-key");
-			var order = 'asc';
 
-			if (key == orderkey) {
-				order = orderby == 'asc' ? 'desc' : 'asc';
+			if (order.length === 0) {
+				order = [key, 'asc'];
+			} else {
+				if (order[0] === key) {
+					order = [key, order[1] === 'asc' ? 'desc' : 'asc'];
+				} else {
+					order = [key, 'asc'];
+				}
 			}
 
 			this.props.updateConfigs(_extends({}, this.props.configs, {
-				orderkey: key,
-				orderby: order
-			}));
+				order: order
+			}), true);
 			this.props.getList({
 				page: 1,
-				order: key + ',' + order
+				order: order[0] + ',' + order[1]
 			});
 		}
 	}, {
 		key: 'onCheckEvent',
 		value: function onCheckEvent(currentTarget) {
-			// this.props.checkedEvent(currentTarget.checked)
+			var checked = currentTarget.checked;
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = this.props.list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var v = _step.value;
+
+					v.checked = checked;
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			this.props.checkEvent([].concat(_toConsumableArray(this.props.list)));
 			this.props.updateConfigs(_extends({}, this.props.configs, {
-				checked: currentTarget.checked
-			}));
+				checked: checked
+			}), true);
 		}
 
 		//resize 按下
@@ -7945,17 +8069,16 @@ var Theader = exports.Theader = function (_Component6) {
 			var _this10 = this;
 
 			var actions = this.props.actions;
-			var _props$configs3 = this.props.configs,
-			    column = _props$configs3.column,
-			    checkboxs = _props$configs3.checkboxs,
-			    orderby = _props$configs3.orderby,
-			    orderkey = _props$configs3.orderkey,
-			    checked = _props$configs3.checked;
+			var _props$configs2 = this.props.configs,
+			    column = _props$configs2.column,
+			    checkboxs = _props$configs2.checkboxs,
+			    checked = _props$configs2.checked;
 
+			var order = this.props.configs.order.length ? this.props.configs.order : ['', ''];
 
 			var columns = column.map(function (v, i) {
 				var resize = '',
-				    order = '';
+				    orders = '';
 
 				if (v.resize) {
 					resize = _react2.default.createElement('span', { onClick: function onClick(e) {
@@ -7964,7 +8087,7 @@ var Theader = exports.Theader = function (_Component6) {
 				}
 
 				if (v.order) {
-					order = _react2.default.createElement('span', { onMouseDown: _this10.onOrderByEvent, className: 'order ' + (orderkey == v.key ? orderby : ''), 'data-key': v.key });
+					orders = _react2.default.createElement('span', { onMouseDown: _this10.onOrderByEvent, className: 'order ' + (order[0] == v.key ? order[1] : ''), 'data-key': v.key });
 				}
 
 				return _react2.default.createElement(
@@ -7984,7 +8107,7 @@ var Theader = exports.Theader = function (_Component6) {
 						null,
 						v.title
 					),
-					order,
+					orders,
 					resize
 				);
 			});
@@ -7999,8 +8122,7 @@ var Theader = exports.Theader = function (_Component6) {
 						_this10.onCheckEvent(_this10.refs['checkbox_all']);
 					} })
 			) : '';
-			console.log(actions);
-			var action = actions.length ? _react2.default.createElement(
+			var action = actions ? _react2.default.createElement(
 				'th',
 				{ className: 'row-action', style: { width: '120px' } },
 				_react2.default.createElement(
@@ -8042,8 +8164,44 @@ var Tbodyer = exports.Tbodyer = function (_Component7) {
 	}
 
 	_createClass(Tbodyer, [{
-		key: 'checkEvent',
-		value: function checkEvent(e) {}
+		key: 'checkboxEvent',
+		value: function checkboxEvent(i) {
+			this.props.list[i].checked = this.props.list[i].checked ? false : true;
+			this.props.checkEvent([].concat(_toConsumableArray(this.props.list)));
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
+
+			try {
+				for (var _iterator2 = this.props.list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var v = _step2.value;
+
+					if (!v.checked) {
+						this.props.updateConfigs(_extends({}, this.props.configs, {
+							checked: false
+						}));
+						return false;
+					}
+				}
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+
+			this.props.updateConfigs(_extends({}, this.props.configs, {
+				checked: true
+			}));
+		}
 	}, {
 		key: 'render',
 		value: function render() {
@@ -8075,29 +8233,33 @@ var Tbodyer = exports.Tbodyer = function (_Component7) {
 						)
 					);
 				});
-				var checked = configs.checked ? true : false;
+				var checked = configs.checked ? true : line.checked ? true : false;
 				var inputCheck = configs.checkboxs ? _react2.default.createElement(
 					'td',
 					{ className: 'row-checkbox', key: 'check' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'td-cell' },
-						_react2.default.createElement('input', { className: 'input-checkbox', value: line.id, checked: checked, onChange: _this12.checkEvent, type: 'checkbox' })
+						_react2.default.createElement('input', { className: 'input-checkbox', value: line.id, checked: checked, onChange: function onChange(e) {
+								return _this12.checkboxEvent(key);
+							}, type: 'checkbox' })
 					)
 				) : '';
 
 				var action = actions.length ? actions.map(function (vv, ii) {
 					if (vv.type == "link") {
 						return _react2.default.createElement(
-							'a',
-							{ key: ii, className: 'ebtn bg-green', href: "", title: vv.name },
+							_reactRouterDom.Link,
+							{ key: ii, className: 'ebtn bg-' + vv.bgcolor, to: vv.href.replace('{id}', line.id), title: vv.name },
 							_react2.default.createElement('i', { className: vv.icon })
 						);
 					}
 					if (vv.type == "button") {
 						return _react2.default.createElement(
 							'span',
-							{ key: ii, className: 'ebtn bg-red', title: vv.name },
+							{ key: ii, className: 'ebtn bg-' + vv.bgcolor, onClick: function onClick(e) {
+									return vv.buttonEvent(line.id);
+								}, title: vv.name },
 							_react2.default.createElement('i', { className: vv.icon })
 						);
 					}
@@ -8134,6 +8296,54 @@ var Tbodyer = exports.Tbodyer = function (_Component7) {
 	}]);
 
 	return Tbodyer;
+}(_react.Component);
+
+/**
+ * Fetch 按钮
+ */
+
+
+var FetchButton = exports.FetchButton = function (_Component8) {
+	_inherits(FetchButton, _Component8);
+
+	function FetchButton(props) {
+		_classCallCheck(this, FetchButton);
+
+		//ES6 类中函数必须手动绑定
+		var _this13 = _possibleConstructorReturn(this, (FetchButton.__proto__ || Object.getPrototypeOf(FetchButton)).call(this, props));
+
+		_this13.submitHandleEvent = _this13.submitHandleEvent.bind(_this13);
+		return _this13;
+	}
+
+	_createClass(FetchButton, [{
+		key: 'submitHandleEvent',
+		value: function submitHandleEvent() {
+			if (!this.props.isFetching) {
+				this.props.submitEvent();
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _props3 = this.props,
+			    isFetching = _props3.isFetching,
+			    className = _props3.className;
+
+
+			if (isFetching) {
+				className += ' loading';
+			}
+
+			return _react2.default.createElement(
+				'span',
+				{ className: className, onClick: this.submitHandleEvent },
+				this.props.children
+			);
+		}
+	}]);
+
+	return FetchButton;
 }(_react.Component);
 
 /***/ }),
@@ -12687,7 +12897,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 var _reduxDevtoolsInstrument = __webpack_require__(207);
 
@@ -14973,7 +15183,7 @@ var create         = __webpack_require__(130)
   , IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(44)(IteratorPrototype, __webpack_require__(16)('iterator'), function(){ return this; });
+__webpack_require__(44)(IteratorPrototype, __webpack_require__(17)('iterator'), function(){ return this; });
 
 module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
@@ -15129,7 +15339,7 @@ var global         = __webpack_require__(27)
   , shared         = __webpack_require__(133)
   , setToStringTag = __webpack_require__(135)
   , uid            = __webpack_require__(81)
-  , wks            = __webpack_require__(16)
+  , wks            = __webpack_require__(17)
   , wksExt         = __webpack_require__(137)
   , wksDefine      = __webpack_require__(138)
   , keyOf          = __webpack_require__(581)
@@ -15666,7 +15876,7 @@ function objType(obj) {
 
 exports.__esModule = true;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -15928,7 +16138,7 @@ module.exports = __webpack_require__(9).getIterator = function(it){
 exports.__esModule = true;
 exports['default'] = undefined;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -16022,7 +16232,7 @@ exports['default'] = ItemRange;
 
 exports.__esModule = true;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -16074,7 +16284,7 @@ exports['default'] = JSONArrayNode;
 
 exports.__esModule = true;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -16254,7 +16464,7 @@ exports['default'] = JSONValueNode;
 
 exports.__esModule = true;
 
-var _extends2 = __webpack_require__(15);
+var _extends2 = __webpack_require__(16);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -16579,7 +16789,7 @@ module.exports = __webpack_require__(620);
 /***/ (function(module, exports, __webpack_require__) {
 
 var classof   = __webpack_require__(252)
-  , ITERATOR  = __webpack_require__(16)('iterator')
+  , ITERATOR  = __webpack_require__(17)('iterator')
   , Iterators = __webpack_require__(47);
 module.exports = __webpack_require__(9).isIterable = function(it){
   var O = Object(it);
@@ -19226,7 +19436,7 @@ var _createClass = __webpack_require__(644)['default'];
 
 var _classCallCheck = __webpack_require__(649)['default'];
 
-var _extends = __webpack_require__(15)['default'];
+var _extends = __webpack_require__(16)['default'];
 
 var _toConsumableArray = __webpack_require__(650)['default'];
 
@@ -19996,7 +20206,7 @@ module.exports = function(iterator, fn, value, entries){
 
 // check on default Array iterator
 var Iterators  = __webpack_require__(47)
-  , ITERATOR   = __webpack_require__(16)('iterator')
+  , ITERATOR   = __webpack_require__(17)('iterator')
   , ArrayProto = Array.prototype;
 
 module.exports = function(it){
@@ -20021,7 +20231,7 @@ module.exports = function(object, index, value){
 /* 658 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ITERATOR     = __webpack_require__(16)('iterator')
+var ITERATOR     = __webpack_require__(17)('iterator')
   , SAFE_CLOSING = false;
 
 try {
@@ -20533,7 +20743,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 
-var _extends = __webpack_require__(15)['default'];
+var _extends = __webpack_require__(16)['default'];
 
 var _Object$keys = __webpack_require__(49)['default'];
 
@@ -20789,7 +20999,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.common = common;
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 //初始化状态
 var commonInitialState = {
@@ -20800,7 +21010,63 @@ var commonInitialState = {
     version: '10.0.106',
     logo: 'http://project.xuehtml.com/react-redux/src/images/login-logo.png',
     logoname: "画方科技",
-    message: ''
+    message: '',
+    ouObjectList: [{
+        id: 0,
+        name: '根部门',
+        ouid: null,
+        path: '/根部门'
+    }, {
+        id: 1,
+        name: '技术部',
+        ouid: 0,
+        path: '/根部门/技术部'
+    }, {
+        id: 2,
+        name: '销售部',
+        ouid: 0,
+        path: '/根部门/销售部'
+    }, {
+        id: 3,
+        name: '研发小组',
+        ouid: 1,
+        path: '/根部门/技术部/研发小组'
+    }],
+    adminTypeObjectList: [{
+        id: 0,
+        name: '超级管理员'
+    }, {
+        id: 1,
+        name: '系统管理员'
+    }, {
+        id: 2,
+        name: '安全管理员'
+    }, {
+        id: 3,
+        name: '审计管理员'
+    }],
+    typeObjectList: [{
+        id: 0,
+        name: '台式机'
+    }, {
+        id: 1,
+        name: '服务器'
+    }, {
+        id: 2,
+        name: '笔记机'
+    }, {
+        id: 3,
+        name: '手机'
+    }, {
+        id: 4,
+        name: '平板电脑'
+    }, {
+        id: 5,
+        name: '交换机'
+    }, {
+        id: 6,
+        name: '路由器'
+    }]
 };
 
 function common() {
@@ -20808,15 +21074,17 @@ function common() {
     var action = arguments[1];
 
 
+    if (action.path !== "common") {
+        return state;
+    }
+
     //根据不同的action type进行state的更新
     switch (action.type) {
-        case _constants.POST_LOGIN:
+        case _constants.LOGIN:
             return _extends({}, state, action.payload);
-        case _constants.GET_LOGOUT:
+        case _constants.LOGOUT:
             return _extends({}, state, action.payload);
         case _constants.GET_AUTH_INFO:
-            return _extends({}, state, action.payload);
-        case _constants.RESIZE_TH_WIDTH:
             return _extends({}, state, action.payload);
         default:
             return _extends({}, state);
@@ -20835,12 +21103,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //引入action类型常量名
-//引入action类型常量名
 
 
 exports.header = header;
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 //初始化状态
 var headerInitialState = {
@@ -20872,8 +21139,6 @@ var headerInitialState = {
         text: '待办事项4'
     }],
     avatar: 'http://laravel.xuehtml.com/public/images/admin.png',
-    adminemail: '',
-    adminname: '',
     adminActions: [{
         text: '个人中心',
         link: '/api/admin/logout'
@@ -20896,8 +21161,6 @@ function header() {
 
     //根据不同的action type进行state的更新
     switch (action.type) {
-        case _constants.GET_AUTH_INFO:
-            return _extends({}, state, action.payload);
         default:
             return _extends({}, state);
     }
@@ -20919,7 +21182,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.list = list;
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 //初始化状态
 var initialListState = {
@@ -20962,7 +21225,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.adminlist = adminlist;
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //初始化状态
 var adminlistInitialState = {
@@ -20980,16 +21245,8 @@ var adminlistInitialState = {
         icon: 'icon-check'
     }],
     list: [], //列表数据
+    info: null, //单条管理员信息(用于查看和编辑)
     count: 64, //列表总条数
-    actions: [{
-        type: 'link',
-        name: '编辑',
-        icon: 'icon-note'
-    }, {
-        type: 'button',
-        name: '删除',
-        icon: 'icon-trash'
-    }], //列表单条操作
     //列表配置
     configs: {
         listPath: 'adminlist',
@@ -20999,8 +21256,7 @@ var adminlistInitialState = {
         checkboxs: true, //选择框 0->无, 1->有
         checked: false, //false->无, all->全选, []->单多选
         search: '',
-        orderkey: '', //排序字段
-        orderby: '', //排序方式
+        order: [],
         column: [{
             key: 'id',
             title: '序号',
@@ -21030,7 +21286,7 @@ var adminlistInitialState = {
             width: 120,
             resize: 0
         }, {
-            key: 'ouname',
+            key: 'ouid',
             title: '部门',
             order: true,
             visibility: false,
@@ -21066,10 +21322,31 @@ function adminlist() {
     //根据不同的action type进行state的更新
     switch (action.type) {
         case _constants.GET_ADMIN_LIST:
+            action.payload.configs = _extends({}, state.configs, action.payload.configs);
             return _extends({}, state, action.payload);
         case _constants.UPDATE_LIST_CONFIGS:
             var configs = _extends({}, state.configs, action.payload);
             return _extends({}, state, { configs: configs });
+        case _constants.CHANGE_LIST_CHECKBOX:
+            var list = [].concat(_toConsumableArray(action.payload));
+            return _extends({}, state, { list: [].concat(_toConsumableArray(list)) });
+        case _constants.GET_ADMIN_INFO:
+            return _extends({}, state, { info: action.payload.info });
+        case _constants.POST_ADMIN_INFO:
+            return _extends({}, state, action.payload);
+        case _constants.DELETE_ADMIN:
+            var ids = action.payload.delete;
+            var oldlist = state.list;
+            if (ids) {
+                for (var i = 0; i < ids.length; i++) {
+                    for (var k = 0; k < oldlist.length; k++) {
+                        if (ids[i] == oldlist[k].id) {
+                            oldlist.splice(k, 1);
+                        }
+                    }
+                }
+            }
+            return _extends({}, state, action.payload, { list: [].concat(_toConsumableArray(oldlist)) });
         default:
             return _extends({}, state);
     }
@@ -21091,7 +21368,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.termlist = termlist;
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 //初始化状态
 var termlistInitialState = {
@@ -21219,9 +21496,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(62);
+var _reactRouterDom = __webpack_require__(50);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 var _reactAddonsCssTransitionGroup = __webpack_require__(702);
 
@@ -21233,13 +21510,15 @@ var _home = __webpack_require__(714);
 
 var _admin = __webpack_require__(715);
 
-var _term = __webpack_require__(717);
+var _term = __webpack_require__(720);
 
-var _header = __webpack_require__(718);
+var _header = __webpack_require__(721);
 
-var _sidebar = __webpack_require__(719);
+var _sidebar = __webpack_require__(722);
 
 var _actions = __webpack_require__(42);
+
+var _constants = __webpack_require__(15);
 
 var _jsCookie = __webpack_require__(269);
 
@@ -21257,6 +21536,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 //引入Action创建函数
+
+
+//引入action类型常量名
 
 
 //引入cookie操作库
@@ -21294,6 +21576,8 @@ var Manage = function (_Component) {
                     null,
                     _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _home.Home }),
                     _react2.default.createElement(_reactRouterDom.Route, { path: '/home', component: _home.Home }),
+                    _react2.default.createElement(_reactRouterDom.Route, { path: '/admin/form/:id', component: _admin.AdminForm }),
+                    _react2.default.createElement(_reactRouterDom.Route, { path: '/admin/form', component: _admin.AdminForm }),
                     _react2.default.createElement(_reactRouterDom.Route, { path: '/admin', component: _admin.AdminList }),
                     _react2.default.createElement(_reactRouterDom.Route, { path: '/term', component: _term.Termhome })
                 )
@@ -21333,12 +21617,10 @@ var AppUI = function (_Component2) {
                         _reactRouterDom.Switch,
                         null,
                         _react2.default.createElement(_reactRouterDom.Route, { key: '/login', exact: true, path: '/login', render: function render(urls) {
-                                //console.log("EEE-login",urls)
                                 var url = urls.location.search.split("=")[1];
                                 return _this3.props.logined ? _react2.default.createElement(_reactRouterDom.Redirect, { to: url }) : _react2.default.createElement(_login.Login, null);
                             } }),
                         _react2.default.createElement(_reactRouterDom.Route, { key: '/', path: '/', render: function render(urls) {
-                                //console.log("EEE-manage",urls)
                                 var backurl = {
                                     pathname: '/login',
                                     search: '?=' + urls.location.pathname
@@ -21359,7 +21641,7 @@ var App = (0, _reactRedux.connect)(function (state) {
 }, function (dispatch) {
     return {
         onWillMount: function onWillMount() {
-            dispatch((0, _actions.authInfo)());
+            dispatch((0, _actions.ActionGet)(_constants.GET_AUTH_INFO, '/api/authinfo', 'common'));
         }
     };
 })(AppUI);
@@ -22111,7 +22393,7 @@ var _invariant2 = _interopRequireDefault(_invariant);
 
 var _LocationUtils = __webpack_require__(147);
 
-var _PathUtils = __webpack_require__(63);
+var _PathUtils = __webpack_require__(62);
 
 var _createTransitionManager = __webpack_require__(148);
 
@@ -22488,7 +22770,7 @@ var _invariant2 = _interopRequireDefault(_invariant);
 
 var _LocationUtils = __webpack_require__(147);
 
-var _PathUtils = __webpack_require__(63);
+var _PathUtils = __webpack_require__(62);
 
 var _createTransitionManager = __webpack_require__(148);
 
@@ -22892,7 +23174,7 @@ var _warning = __webpack_require__(6);
 
 var _warning2 = _interopRequireDefault(_warning);
 
-var _PathUtils = __webpack_require__(63);
+var _PathUtils = __webpack_require__(62);
 
 var _LocationUtils = __webpack_require__(147);
 
@@ -23808,7 +24090,7 @@ Redirect.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LocationUtils__ = __webpack_require__(85);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_3__LocationUtils__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_3__LocationUtils__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PathUtils__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PathUtils__ = __webpack_require__(63);
 /* unused harmony reexport parsePath */
 /* unused harmony reexport createPath */
 
@@ -23831,7 +24113,7 @@ Redirect.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(85);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(265);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -24135,7 +24417,7 @@ var createBrowserHistory = function createBrowserHistory() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(85);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(265);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -24453,7 +24735,7 @@ var createHashHistory = function createHashHistory() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PathUtils__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PathUtils__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(85);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__createTransitionManager__ = __webpack_require__(152);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -24638,7 +24920,7 @@ var createMemoryHistory = function createMemoryHistory() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history_PathUtils__ = __webpack_require__(63);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history_PathUtils__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history_PathUtils___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_history_PathUtils__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Router__ = __webpack_require__(150);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -26050,11 +26332,13 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(54);
+var _reactRouter = __webpack_require__(72);
 
 var _redux = __webpack_require__(55);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
+
+var _constants = __webpack_require__(15);
 
 var _actions = __webpack_require__(42);
 
@@ -26065,6 +26349,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+//引入action类型常量名
+
 
 //引入Action创建函数
 
@@ -26100,7 +26387,6 @@ var LoginUI = function (_Component) {
 
 			var emailInput = void 0,
 			    passwordInput = void 0;
-			console.log("装载了登录界面");
 			return _react2.default.createElement(
 				'div',
 				{ className: 'container' },
@@ -26109,9 +26395,7 @@ var LoginUI = function (_Component) {
 					{ className: 'login' },
 					_react2.default.createElement(
 						'div',
-						{ className: 'logo', onClick: function onClick(e) {
-								return console.log(e);
-							} },
+						{ className: 'logo' },
 						_react2.default.createElement('img', { src: logo, alt: logoname })
 					),
 					error === 0 || error === 1 ? null : _react2.default.createElement(
@@ -26163,11 +26447,11 @@ var Login = exports.Login = (0, _reactRedux.connect)(function (state) {
 }, function (dispatch, ownProps) {
 	return {
 		onSubmit: function onSubmit(email, password) {
-			dispatch((0, _actions.loginFetch)({ email: email, password: password }, '/common'));
+			dispatch((0, _actions.ActionPost)(_constants.LOGIN, '/api/admin/login', { email: email, password: password }, 'common'));
 		},
 		onKeyPress: function onKeyPress(event, email, password) {
 			if (event.charCode === 13) {
-				dispatch((0, _actions.loginFetch)({ email: email, password: password }, '/common'));
+				dispatch((0, _actions.ActionPost)(_constants.LOGIN, '/api/admin/login', { email: email, password: password }, 'common'));
 			}
 		}
 	};
@@ -26191,11 +26475,11 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(54);
+var _reactRouter = __webpack_require__(72);
 
 var _redux = __webpack_require__(55);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27413,31 +27697,43 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AdminForm = exports.AdminList = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(62);
+var _reactRouterDom = __webpack_require__(50);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 var _query = __webpack_require__(153);
 
 var _query2 = _interopRequireDefault(_query);
 
+var _validator = __webpack_require__(716);
+
+var _validator2 = _interopRequireDefault(_validator);
+
 var _dropdown = __webpack_require__(154);
 
-var _popup = __webpack_require__(716);
+var _popup = __webpack_require__(717);
+
+var _modal = __webpack_require__(718);
+
+var _radios = __webpack_require__(719);
 
 var _common = __webpack_require__(268);
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 var _actions = __webpack_require__(42);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27463,10 +27759,29 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var AdminListUI = function (_Component) {
 	_inherits(AdminListUI, _Component);
 
-	function AdminListUI() {
+	function AdminListUI(props) {
 		_classCallCheck(this, AdminListUI);
 
-		return _possibleConstructorReturn(this, (AdminListUI.__proto__ || Object.getPrototypeOf(AdminListUI)).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, (AdminListUI.__proto__ || Object.getPrototypeOf(AdminListUI)).call(this, props));
+
+		_this.actions = [{
+			type: 'link',
+			href: '/admin/form/{id}',
+			name: '编辑',
+			icon: 'icon-note',
+			bgcolor: 'green'
+		}, {
+			type: 'button',
+			name: '删除',
+			icon: 'icon-trash',
+			bgcolor: 'red',
+			buttonEvent: function buttonEvent(id) {
+				_this.props.deleteEvent(id);
+			}
+		}];
+
+		_this.decorater = _this.decorater.bind(_this);
+		return _this;
 	}
 
 	_createClass(AdminListUI, [{
@@ -27476,19 +27791,19 @@ var AdminListUI = function (_Component) {
 				page: 1
 			});
 		}
-	}, {
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(nextProps) {}
-		//
 
 		//值修饰器
 
 	}, {
 		key: 'decorater',
 		value: function decorater(key, value) {
+			var _props = this.props,
+			    ouObjectList = _props.ouObjectList,
+			    adminTypeObjectList = _props.adminTypeObjectList;
+
 			switch (key) {
 				case "state":
-					return value[key] == 1 ? _react2.default.createElement(
+					return value[key] == 0 ? _react2.default.createElement(
 						'span',
 						{ className: 'state-green' },
 						'\u542F\u7528'
@@ -27497,6 +27812,10 @@ var AdminListUI = function (_Component) {
 						{ className: 'state-red' },
 						'\u505C\u7528'
 					);
+				case 'ouid':
+					return ouObjectList[value[key]].name;
+				case 'type':
+					return adminTypeObjectList[value[key]].name;
 				default:
 					return value[key];
 			}
@@ -27504,17 +27823,17 @@ var AdminListUI = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _props = this.props,
-			    tools = _props.tools,
-			    actions = _props.actions,
-			    list = _props.list,
-			    count = _props.count,
-			    configs = _props.configs,
-			    isCheckAll = _props.isCheckAll;
 			var _props2 = this.props,
-			    toolsClickEvent = _props2.toolsClickEvent,
-			    getList = _props2.getList,
-			    updateConfigs = _props2.updateConfigs;
+			    tools = _props2.tools,
+			    actions = _props2.actions,
+			    list = _props2.list,
+			    count = _props2.count,
+			    configs = _props2.configs;
+			var _props3 = this.props,
+			    toolsClickEvent = _props3.toolsClickEvent,
+			    getList = _props3.getList,
+			    updateConfigs = _props3.updateConfigs,
+			    checkEvent = _props3.checkEvent;
 
 			return _react2.default.createElement(
 				'div',
@@ -27686,8 +28005,8 @@ var AdminListUI = function (_Component) {
 						_react2.default.createElement(
 							'table',
 							{ className: 'olist-table', id: 'olist_table' },
-							_react2.default.createElement(_common.Theader, { getList: getList, updateConfigs: updateConfigs, configs: configs, actions: actions, isCheckAll: isCheckAll }),
-							_react2.default.createElement(_common.Tbodyer, { list: list, configs: configs, actions: actions, decorater: this.decorater })
+							_react2.default.createElement(_common.Theader, { getList: getList, updateConfigs: updateConfigs, list: list, configs: configs, actions: true, checkEvent: checkEvent }),
+							_react2.default.createElement(_common.Tbodyer, { updateConfigs: updateConfigs, list: list, configs: configs, actions: this.actions, checkEvent: checkEvent, decorater: this.decorater })
 						)
 					),
 					_react2.default.createElement(_common.PageList, { getList: getList, updateConfigs: updateConfigs, count: parseInt(count), configs: configs })
@@ -27699,19 +28018,164 @@ var AdminListUI = function (_Component) {
 	return AdminListUI;
 }(_react.Component);
 
+var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
+	return _extends({}, state.adminlist, {
+		ouObjectList: state.common.ouObjectList,
+		adminTypeObjectList: state.common.adminTypeObjectList
+	});
+}, function (dispatch, ownProps) {
+
+	return {
+		getList: function getList(where) {
+			dispatch((0, _actions.ActionGet)(_constants.GET_ADMIN_LIST, '/api/admin/list', where, 'adminlist'));
+		},
+		//更新配置
+		updateConfigs: function updateConfigs(configs, isPost) {
+			if (isPost) {
+				//更新数据库配置
+				(0, _actions.FetchPost)('/api/setting/list_configs', {
+					listPath: configs.listPath,
+					configs: JSON.stringify(configs)
+				});
+			}
+			//更新store配置
+			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, configs, 'adminlist'));
+		},
+		//单选框
+		checkEvent: function checkEvent(list) {
+			//更新store配置
+			dispatch((0, _actions.ActionCreator)(_constants.CHANGE_LIST_CHECKBOX, list, 'adminlist'));
+		},
+		deleteEvent: function deleteEvent(id) {
+			//删除一条
+			dispatch((0, _actions.ActionGet)(_constants.DELETE_ADMIN, '/api/admin/delete/' + id, 'adminlist'));
+		},
+		toolsClickEvent: function toolsClickEvent(value) {
+			var idArray = [];
+			var checkboxArray = (0, _query2.default)("#list_body .input-checkbox:checked");
+			checkboxArray.each(function (ii, element) {
+				idArray.push(element.value);
+			});
+
+			if (idArray.length === 0) {
+				return false;
+			}
+
+			switch (value) {
+				case '0':
+					dispatch((0, _actions.ActionGet)(_constants.DELETE_ADMIN, '/api/admin/delete/' + idArray.join(','), 'adminlist'));
+					break;
+				default:
+			}
+		}
+	};
+})(AdminListUI);
+
 var AdminFormUI = function (_Component2) {
 	_inherits(AdminFormUI, _Component2);
 
-	function AdminFormUI() {
+	function AdminFormUI(props) {
 		_classCallCheck(this, AdminFormUI);
 
-		return _possibleConstructorReturn(this, (AdminFormUI.__proto__ || Object.getPrototypeOf(AdminFormUI)).apply(this, arguments));
+		var _this2 = _possibleConstructorReturn(this, (AdminFormUI.__proto__ || Object.getPrototypeOf(AdminFormUI)).call(this, props));
+
+		_this2.state = {
+			id: '',
+			name: '',
+			email: '',
+			ouid: 0,
+			type: 0,
+			state: 0,
+			desp: '',
+			password: ''
+		};
+
+		//ES6 类中函数必须手动绑定
+		_this2.handleChange = _this2.handleChange.bind(_this2);
+		_this2.submitEvent = _this2.submitEvent.bind(_this2);
+		return _this2;
 	}
 
 	_createClass(AdminFormUI, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			this.props.getAdminInfo(this.props.match.params.id);
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			if (nextProps.info) {
+				var _nextProps$info = nextProps.info,
+				    id = _nextProps$info.id,
+				    name = _nextProps$info.name,
+				    email = _nextProps$info.email,
+				    ouid = _nextProps$info.ouid,
+				    type = _nextProps$info.type,
+				    state = _nextProps$info.state,
+				    desp = _nextProps$info.desp;
+
+				this.setState({
+					id: id, name: name, email: email, ouid: ouid, type: type, state: state, desp: desp
+				});
+			}
+		}
+	}, {
+		key: 'handleChange',
+		value: function handleChange(e) {
+			var target = e.target;
+			var value = target.type === 'checkbox' ? target.checked : target.value;
+			var name = target.name;
+			this.setState(_defineProperty({}, name, value));
+		}
+	}, {
+		key: 'submitEvent',
+		value: function submitEvent(e) {
+			var _this3 = this;
+
+			var forms = document.forms.adminform;
+			var formdata = {
+				id: forms.id.value,
+				name: (0, _validator2.default)(forms.name),
+				email: (0, _validator2.default)(forms.email),
+				ouid: (0, _query2.default)(forms.ouid).val(),
+				type: (0, _query2.default)(forms.type).val(),
+				state: forms.state.value,
+				desp: (0, _validator2.default)(forms.desp)
+			};
+
+			if (formdata.id === "") {
+				formdata.password = forms.password.value;
+			}
+
+			console.log(formdata);
+			this.props.submit(formdata, function (data) {
+				_this3.props.history.push('/admin/list');
+			});
+		}
+	}, {
 		key: 'render',
 		value: function render() {
-			var submit = this.props.submit;
+			var isFetching = this.props.isFetching;
+			var _props4 = this.props,
+			    ouObjectList = _props4.ouObjectList,
+			    adminTypeObjectList = _props4.adminTypeObjectList;
+
+
+			var ouOptions = ouObjectList.map(function (v, i) {
+				return _react2.default.createElement(
+					'option',
+					{ key: i, value: v.id },
+					v.name
+				);
+			});
+
+			var typeOptions = adminTypeObjectList.map(function (v, i) {
+				return _react2.default.createElement(
+					'option',
+					{ key: i, value: v.id },
+					v.name
+				);
+			});
 
 			return _react2.default.createElement(
 				'div',
@@ -27730,6 +28194,183 @@ var AdminFormUI = function (_Component2) {
 						_react2.default.createElement('i', { className: 'icon-calendar' }),
 						' Wed Aug 10 2016 10:51:20 GMT+0800'
 					)
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'form-box' },
+					_react2.default.createElement(
+						'form',
+						{ className: 'form', name: 'adminform' },
+						_react2.default.createElement('input', { type: 'hidden', name: 'id', value: this.state.id, onChange: this.handleChange }),
+						_react2.default.createElement(
+							'section',
+							{ className: 'section' },
+							_react2.default.createElement(
+								'h3',
+								{ className: 'section-head' },
+								'\u65B0\u589E\u7BA1\u7406\u5458'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u7528\u6237\u540D\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										'label',
+										{ className: 'input-prepend labled inline-span6' },
+										_react2.default.createElement('input', { type: 'text', name: 'name', value: this.state.name, onChange: this.handleChange }),
+										_react2.default.createElement(
+											'span',
+											{ className: 'add-on' },
+											_react2.default.createElement('i', { className: 'icon-user' })
+										)
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u5BC6\u7801\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										'label',
+										{ className: 'input-prepend labled inline-span6' },
+										_react2.default.createElement('input', { name: 'password', type: 'password', value: this.state.password, onChange: this.handleChange }),
+										_react2.default.createElement(
+											'span',
+											{ className: 'add-on' },
+											_react2.default.createElement('i', { className: 'icon-lock' })
+										)
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u90AE\u7BB1\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										'label',
+										{ className: 'input-prepend labled inline-span6' },
+										_react2.default.createElement('input', { type: 'text', name: 'email', value: this.state.email, onChange: this.handleChange }),
+										_react2.default.createElement(
+											'span',
+											{ className: 'add-on' },
+											_react2.default.createElement('i', { className: 'icon-envelope-open' })
+										)
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u72B6\u6001\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										_radios.Radios,
+										{ name: 'state', value: this.state.state },
+										_react2.default.createElement(
+											_radios.Radio,
+											{ className: 'col-span1', value: '0' },
+											'\u542F\u7528'
+										),
+										_react2.default.createElement(
+											_radios.Radio,
+											{ className: 'col-span1', value: '1' },
+											'\u505C\u7528'
+										)
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u90E8\u95E8\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										'select',
+										{ name: 'ouid', value: this.state.ouid, onChange: this.handleChange, className: 'inline-span4' },
+										ouOptions
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u7C7B\u578B\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										'select',
+										{ name: 'type', value: this.state.type, onChange: this.handleChange, className: 'inline-span4' },
+										typeOptions
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'control-label' },
+									'\u63CF\u8FF0\uFF1A'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement('textarea', { className: 'inline-span8', name: 'desp', value: this.state.desp, onChange: this.handleChange })
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'control' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'controls' },
+									_react2.default.createElement(
+										_common.FetchButton,
+										{ isFetching: isFetching, submitEvent: this.submitEvent, className: 'button green' },
+										'\u63D0-\u4EA4'
+									)
+								)
+							)
+						)
+					)
 				)
 			);
 		}
@@ -27738,48 +28379,84 @@ var AdminFormUI = function (_Component2) {
 	return AdminFormUI;
 }(_react.Component);
 
-var AdminList = exports.AdminList = (0, _reactRedux.connect)(function (state) {
-	return state.adminlist;
-}, function (dispatch, ownProps) {
-
-	return {
-		getList: function getList(where, configs) {
-			dispatch((0, _actions.getAdminList)(where, 'adminlist'));
-		},
-		//更新配置
-		updateConfigs: function updateConfigs(configs) {
-			//更新数据库配置
-			(0, _actions.makePost)('/api/setting/list_configs', {
-				listPath: configs.listPath,
-				configs: JSON.stringify(configs)
-			});
-			//更新store配置
-			dispatch((0, _actions.ActionCreator)(_constants.UPDATE_LIST_CONFIGS, configs, 'adminlist'));
-		},
-
-		toolsClickEvent: function toolsClickEvent() {
-			var idArray = [];
-			var checkboxArray = (0, _query2.default)("#list_body .input-checkbox:checked");
-			checkboxArray.each(function (ii, element) {
-				idArray.push(element.value);
-			});
-			console.log(idArray);
-		}
-	};
-})(AdminListUI);
-
 var AdminForm = exports.AdminForm = (0, _reactRedux.connect)(function (state) {
-	return state.adminlist;
+	return {
+		isFetching: state.adminlist.isFetching,
+		info: state.adminlist.info,
+		ouObjectList: state.common.ouObjectList,
+		adminTypeObjectList: state.common.adminTypeObjectList
+	};
 }, function (dispatch, ownProps) {
 	return {
-		submit: function submit(o) {
-			//dispatch(loginFetch({email, password},'/common'))
+		getAdminInfo: function getAdminInfo(id) {
+			dispatch((0, _actions.ActionGet)(_constants.GET_ADMIN_INFO, '/api/admin/view/' + id, 'adminlist'));
+		},
+		submit: function submit(formdata, callback) {
+			var url = '/api/admin/edit';
+
+			if (formdata.id !== '') {
+				url += '/' + formdata.id;
+			}
+
+			dispatch((0, _actions.ActionPost)(_constants.POST_ADMIN_INFO, url, formdata, 'adminlist', callback));
 		}
 	};
 })(AdminFormUI);
 
 /***/ }),
 /* 716 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Validator = exports.Validator = function () {
+    function Validator(selector) {
+        _classCallCheck(this, Validator);
+    }
+
+    _createClass(Validator, [{
+        key: "check",
+        value: function check(element, rule) {}
+    }, {
+        key: "required",
+        value: function required(value) {
+            return value !== "";
+        }
+    }, {
+        key: "number",
+        value: function number(value, min, max) {
+            //是数字类型返回真
+            return !isNaN(Number(value));
+        }
+    }, {
+        key: "integer",
+        value: function integer(value) {
+            //是整数类型返回真
+            return (/^[1-9][0-9]*$/.test(value)
+            );
+        }
+    }]);
+
+    return Validator;
+}();
+
+var Validater = function Validater(element, rule) {
+    return element.value;
+};
+
+exports.default = Validater;
+
+/***/ }),
+/* 717 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27959,12 +28636,12 @@ var Popup = exports.Popup = function (_Component) {
 					break;
 			}
 
-			console.log("elementAttr", elementAttr);
-			console.log("popupAttr", popupAttr);
-			console.log("screenarea", screenarea);
-			console.log("containment", containment);
-			console.log("orientation", orientation);
-			console.log("coordinate", coordinate);
+			// console.log ("elementAttr", elementAttr);
+			// console.log ("popupAttr", popupAttr);
+			// console.log ("screenarea", screenarea);
+			// console.log ("containment", containment);
+			// console.log ("orientation", orientation);
+			// console.log ("coordinate", coordinate);
 
 			popup.className += " " + orientation;
 			popup.style = 'left: ' + coordinate.left + 'px; top: ' + (coordinate.top + screenarea.scrollTop) + 'px; right: auto; bottom: auto; display: table';
@@ -28003,7 +28680,314 @@ var Popup = exports.Popup = function (_Component) {
 }(_react.Component);
 
 /***/ }),
-/* 717 */
+/* 718 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Alert = exports.Confirm = exports.modal = exports.Modalbox = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Modalbox = exports.Modalbox = function (_Component) {
+	_inherits(Modalbox, _Component);
+
+	function Modalbox(props) {
+		_classCallCheck(this, Modalbox);
+
+		return _possibleConstructorReturn(this, (Modalbox.__proto__ || Object.getPrototypeOf(Modalbox)).call(this, props));
+	}
+
+	_createClass(Modalbox, [{
+		key: 'render',
+		value: function render() {
+
+			return _react2.default.createElement('div', null);
+		}
+	}]);
+
+	return Modalbox;
+}(_react.Component);
+
+var modal = exports.modal = function modal() {
+	var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '提示信息';
+
+
+	//背景
+	var dimmer = document.createElement("div");
+	dimmer.className = "dimmer";
+
+	//弹出框
+	var modalbox = document.createElement("div");
+	modalbox.className = "modal animate";
+	modalbox.innerHTML = '<span class="modal-close close">\xD7</span>\n\t\t\t<div class="header">' + title + '</div>\n\t\t\t<div class="content">' + content + '</div>\n\t\t\t<div class="actions">\n\t\t\t\t<span class="button green close">\u77E5\u9053\u4E86</span>\n\t\t\t</div>';
+
+	document.body.appendChild(dimmer);
+	document.body.appendChild(modalbox);
+
+	//计算弹出框位置
+	var width = modalbox.offsetWidth;
+	var height = modalbox.offsetHeight;
+
+	modalbox.style = 'margin-left: ' + -width / 2 + 'px; margin-top: ' + -height / 2 + 'px; display: block';
+	modalbox.className += " visible";
+	dimmer.className += " visible";
+};
+
+var Confirm = exports.Confirm = function Confirm() {
+	var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var callback = arguments[1];
+	var title = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '提示信息';
+
+
+	//背景
+	var dimmer = document.createElement("div");
+	dimmer.className = "dimmer";
+
+	//弹出框
+	var modalbox = document.createElement("div");
+	modalbox.className = "modal animate";
+	modalbox.innerHTML = '<span class="modal-close close">\xD7</span>\n\t\t\t<div class="modal-header">' + title + '</div>\n\t\t\t<div class="content">' + content + '</div>\n\t\t\t<div class="actions">\n\t\t\t\t<span class="button close">\u53D6\u6D88</span>\n\t\t\t\t<span class="button green label close confirm-button"><i class="fa fa-check"></i> \u786E\u8BA4</span>\n\t\t\t</div>';
+
+	document.body.appendChild(dimmer);
+	document.body.appendChild(modalbox);
+
+	modalbox.style = "display: block";
+
+	//计算弹出框位置
+	var width = modalbox.offsetWidth;
+	var height = modalbox.offsetHeight;
+
+	modalbox.style = 'margin-left: ' + -width / 2 + 'px; margin-top: ' + -height / 2 + 'px; display: block';
+	modalbox.className += " visible";
+	dimmer.className += " visible";
+
+	//点击关闭窗体
+	dimmer.onclick = function (e) {
+		modalbox.className = "modal animate";
+		dimmer.className = "dimmer";
+		setTimeout(function () {
+			document.body.removeChild(dimmer);
+			document.body.removeChild(modalbox);
+		}, 300);
+	};
+
+	//点击 close 关闭窗体
+	modalbox.onclick = function (e) {
+		if (e.target.classList.contains('confirm-button')) {
+			callback();
+		}
+		if (e.target.classList.contains('close')) {
+			modalbox.className = "modal animate";
+			dimmer.className = "dimmer";
+			setTimeout(function () {
+				document.body.removeChild(dimmer);
+				document.body.removeChild(modalbox);
+			}, 300);
+		}
+	};
+};
+
+var Alert = exports.Alert = function Alert() {
+	var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '提示信息';
+
+
+	//背景
+	var dimmer = document.createElement("div");
+	dimmer.className = "dimmer";
+
+	//弹出框
+	var modalbox = document.createElement("div");
+	modalbox.className = "modal animate";
+	modalbox.innerHTML = '<span class="modal-close close">\xD7</span>\n\t\t\t<div class="modal-header">' + title + '</div>\n\t\t\t<div class="content">' + content + '</div>\n\t\t\t<div class="actions">\n\t\t\t\t<span class="button green close">\u77E5\u9053\u4E86</span>\n\t\t\t</div>';
+
+	document.body.appendChild(dimmer);
+	document.body.appendChild(modalbox);
+
+	modalbox.style = "display: block";
+
+	//计算弹出框位置
+	var width = modalbox.offsetWidth;
+	var height = modalbox.offsetHeight;
+
+	modalbox.style = 'margin-left: ' + -width / 2 + 'px; margin-top: ' + -height / 2 + 'px; display: block';
+	modalbox.className += " visible";
+	dimmer.className += " visible";
+
+	//点击关闭窗体
+	dimmer.onclick = function (e) {
+		modalbox.className = "modal animate";
+		dimmer.className = "dimmer";
+		setTimeout(function () {
+			document.body.removeChild(dimmer);
+			document.body.removeChild(modalbox);
+		}, 300);
+	};
+
+	//点击 close 关闭窗体
+	modalbox.onclick = function (e) {
+		var target = e.target;
+		if (e.target.classList.contains('close')) {
+			modalbox.className = "modal animate";
+			dimmer.className = "dimmer";
+			setTimeout(function () {
+				document.body.removeChild(dimmer);
+				document.body.removeChild(modalbox);
+			}, 300);
+		}
+	};
+};
+
+/***/ }),
+/* 719 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Radios = exports.Radio = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Radio = exports.Radio = function (_Component) {
+    _inherits(Radio, _Component);
+
+    function Radio() {
+        _classCallCheck(this, Radio);
+
+        return _possibleConstructorReturn(this, (Radio.__proto__ || Object.getPrototypeOf(Radio)).apply(this, arguments));
+    }
+
+    _createClass(Radio, [{
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "label",
+                { className: className },
+                _react2.default.createElement("input", {
+                    type: "radio",
+                    value: value
+                }),
+                children
+            );
+        }
+    }]);
+
+    return Radio;
+}(_react.Component);
+
+var Radios = exports.Radios = function (_Component2) {
+    _inherits(Radios, _Component2);
+
+    function Radios(props) {
+        _classCallCheck(this, Radios);
+
+        var _this2 = _possibleConstructorReturn(this, (Radios.__proto__ || Object.getPrototypeOf(Radios)).call(this, props));
+
+        _this2.state = {
+            value: 0
+        };
+
+        //ES6 类中函数必须手动绑定
+        _this2.handleChange = _this2.handleChange.bind(_this2);
+        return _this2;
+    }
+
+    _createClass(Radios, [{
+        key: "handleChange",
+        value: function handleChange(e) {
+            if (e.target.checked == true) {
+                this.setState({
+                    value: e.target.value
+                });
+            }
+        }
+    }, {
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps(nextProps) {
+            if (nextProps.value !== undefined) {
+                this.setState({
+                    value: nextProps.value
+                });
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _this3 = this;
+
+            var _props = this.props,
+                name = _props.name,
+                onChange = _props.onChange;
+
+            var radioChild = _react2.default.Children.map(this.props.children, function (arg, i) {
+                var _arg$props = arg.props,
+                    value = _arg$props.value,
+                    className = _arg$props.className,
+                    children = _arg$props.children;
+
+
+                return _react2.default.createElement(
+                    "label",
+                    { className: className },
+                    _react2.default.createElement("input", {
+                        type: "radio",
+                        name: name + '__radio_',
+                        value: value,
+                        checked: _this3.state.value == value,
+                        onChange: _this3.handleChange
+                    }),
+                    children
+                );
+            });
+
+            return _react2.default.createElement(
+                "div",
+                null,
+                radioChild,
+                _react2.default.createElement("input", { type: "hidden", name: name, value: this.state.value })
+            );
+        }
+    }]);
+
+    return Radios;
+}(_react.Component);
+
+/***/ }),
+/* 720 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28020,15 +29004,15 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(62);
+var _reactRouterDom = __webpack_require__(50);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 var _dropdown = __webpack_require__(154);
 
 var _common = __webpack_require__(268);
 
-var _constants = __webpack_require__(22);
+var _constants = __webpack_require__(15);
 
 var _actions = __webpack_require__(42);
 
@@ -28100,7 +29084,7 @@ var Termhome = exports.Termhome = (0, _reactRedux.connect)(function (state) {
 })(TermhomeUI);
 
 /***/ }),
-/* 718 */
+/* 721 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28119,13 +29103,15 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(62);
+var _reactRouterDom = __webpack_require__(50);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 var _dropdown = __webpack_require__(154);
 
 var _actions = __webpack_require__(42);
+
+var _constants = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28141,6 +29127,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //引入Action创建函数
 
 
+//引入action类型常量名
+
+
 var HeaderUI = function (_Component) {
 	_inherits(HeaderUI, _Component);
 
@@ -28153,6 +29142,9 @@ var HeaderUI = function (_Component) {
 	_createClass(HeaderUI, [{
 		key: 'render',
 		value: function render() {
+
+			console.log(this.props);
+
 			var _props = this.props,
 			    reminds = _props.reminds,
 			    messages = _props.messages,
@@ -28267,7 +29259,7 @@ var Header = exports.Header = (0, _reactRedux.connect)(function (state) {
 			console.log("header admin click event", value);
 			switch (value) {
 				case "3":
-					dispatch((0, _actions.logoutFetch)({ a: 1 }, '/common'));
+					dispatch((0, _actions.ActionGet)(_constants.LOGOUT, '/api/admin/logout', 'common'));
 					break;
 				default:
 
@@ -28277,7 +29269,7 @@ var Header = exports.Header = (0, _reactRedux.connect)(function (state) {
 })(HeaderUI);
 
 /***/ }),
-/* 719 */
+/* 722 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28294,9 +29286,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(62);
+var _reactRouterDom = __webpack_require__(50);
 
-var _reactRedux = __webpack_require__(20);
+var _reactRedux = __webpack_require__(21);
 
 var _jsCookie = __webpack_require__(269);
 
