@@ -217,34 +217,34 @@ class AdminController extends Controller
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function delete(Request $request, Admin $admin, $id)
+    public function del(Request $request, Admin $admin, $id)
     {
         $idArray = explode(',', $id);
         $admin::destroy($idArray);
 
         $results = Error::make(0);
-        $results['delete'] = $idArray;
+        $results['ids'] = $idArray;
 
         return response()->json($results);
 
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Admin $admin)
+    public function edit_state(Request $request, Admin $admin, $id)
     {
-        //
+        $idArray = explode(',', $id);
+
+        $results = Error::make(0);
+
+        $state = (int)$request->input("state");
+
+        $admin::whereIn('id', $idArray)
+            ->update(['state' => $state]);
+
+
+        $results['ids'] = $idArray;
+        $results['state'] = $state;
+
+        return response()->json($results);
     }
 }

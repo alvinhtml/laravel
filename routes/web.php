@@ -38,7 +38,8 @@ Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
     Route::get('admin/list', 'Admin\AdminController@showAdminList');
     Route::post('admin/edit/{id?}', 'Admin\AdminController@add');
     Route::get('admin/view/{id}', 'Admin\AdminController@view');
-    Route::get('admin/delete/{id}', 'Admin\AdminController@delete');
+    Route::get('admin/del/{id}', 'Admin\AdminController@del');
+    Route::get('admin/edit_state/{id}', 'Admin\AdminController@edit_state');
 
     //logined info
     Route::get('authinfo', 'Admin\AdminController@authInfo')->name("authinfo");
