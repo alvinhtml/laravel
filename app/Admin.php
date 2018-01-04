@@ -15,7 +15,7 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'type', 'ouid', 'state', 'desp',
+        'name', 'email', 'password', 'type', 'ou_id', 'state', 'desp',
     ];
 
     /**
@@ -26,4 +26,9 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    // public function ou()
+    // {
+    //     return $this->belongsTo('App\Ou');
+    // }
 }

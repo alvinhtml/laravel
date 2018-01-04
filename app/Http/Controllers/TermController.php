@@ -1,44 +1,30 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Admin;
+use App\Term;
 use App\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Libraries\Error;
 use Auth;
 
-class AdminController extends Controller
+class TermController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:admin');
     }
 
-    /**
-     * common auth info
-     * @return [type] [description]
-     */
-    public function authInfo()
-    {
-        $admin = Auth::guard('admin')->user();
-        $result = Error::make(0);
-        $result['logined'] = true;
-        $result['adminname'] = $admin['name'];
-        $result['adminemail'] = $admin['email'];
-        return response()->json($result);
-    }
 
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Admin  $admin
+     * @param  \App\Term  $term
      * @return \Illuminate\Http\Response
      */
-    public function showAdminList(Admin $admin, Setting $setting, Request $request)
+    public function showTermList(Term $term, Setting $setting, Request $request)
     {
 
         $results = Error::make(0);
@@ -48,7 +34,7 @@ class AdminController extends Controller
 
         //查询数据库中是否已经存了对应的配置
         $settings = $setting::where('admin', $email)
-            ->where('name', 'adminlist')
+            ->where('name', 'termlist')
             ->get();
 
         //检查配置数据是否为空
@@ -86,11 +72,12 @@ class AdminController extends Controller
 
         if (empty($search)) {
             //获取最大页数
-            $count = $admin->count();
-            $datalist = $admin;
+            $count = $term->count();
+            $datalist = $term;
         } else {
-            $datalist = $admin->where('name', 'like', '%'.$search.'%')
-                ->orWhere('email', 'like', '%'.$search.'%')
+            $datalist = $term->where('name', 'like', '%'.$search.'%')
+                ->orWhere('os', 'like', '%'.$search.'%')
+                ->orWhere('hostname', 'like', '%'.$search.'%')
                 ->orWhere('desp', 'like', '%'.$search.'%');
             //获取最大页数
             $count = $datalist->count();
@@ -131,20 +118,20 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Admin  $admin
+     * @param  \App\Term  $term
      * @return \Illuminate\Http\Response
      */
-    public function add(Admin $admin, Request $request, $id = null)
+    public function add(Term $term, Request $request, $id = null)
     {
         if (isset($id)) {
-            $datalist = $admin::find($id);
+            $datalist = $term::find($id);
 
             if ($datalist) {
                 $datalist->name = $request->input("name");
-                $datalist->email = $request->input("email");
                 $datalist->type = $request->input("type");
                 $datalist->ou_id = $request->input("ou_id");
-                $datalist->state = $request->input("state");
+                $datalist->hostname = $request->input("hostname");
+                $datalist->os = $request->input("os");
                 $datalist->desp = $request->input("desp");
                 $datalist->save();
 
@@ -155,16 +142,14 @@ class AdminController extends Controller
                 return response()->json($results);
             }
         } else {
-            $datalist = new Admin;
+            $datalist = new Term;
 
             $datalist->name = $request->input("name");
-            $datalist->password = bcrypt($request->input("password"));
-            $datalist->email = $request->input("email");
             $datalist->type = $request->input("type");
             $datalist->ou_id = $request->input("ou_id");
-            $datalist->state = $request->input("state");
+            $datalist->hostname = $request->input("hostname");
+            $datalist->os = $request->input("os");
             $datalist->desp = $request->input("desp");
-            $datalist->remember_token = str_random(10);
             $datalist->save();
 
             $results = Error::make(0);
@@ -175,11 +160,11 @@ class AdminController extends Controller
         }
     }
 
-    public function view(Admin $admin, Request $request, $id)
+    public function view(Term $term, Request $request, $id)
     {
 
         //查询数据库中是否已经存了对应的配置
-        $datalist = $admin::where('id', $id)
+        $datalist = $term::where('id', $id)
             ->get();
 
         $results = Error::make(0);
@@ -190,10 +175,10 @@ class AdminController extends Controller
 
     }
 
-    public function del(Request $request, Admin $admin, $id)
+    public function del(Request $request, Term $term, $id)
     {
         $idArray = explode(',', $id);
-        $admin::destroy($idArray);
+        $term::destroy($idArray);
 
         $results = Error::make(0);
         $results['ids'] = $idArray;
@@ -203,7 +188,7 @@ class AdminController extends Controller
 
     }
 
-    public function edit_state(Request $request, Admin $admin, $id)
+    public function edit_state(Request $request, Term $term, $id)
     {
         $idArray = explode(',', $id);
 
@@ -211,7 +196,7 @@ class AdminController extends Controller
 
         $state = (int)$request->input("state");
 
-        $admin::whereIn('id', $idArray)
+        $term::whereIn('id', $idArray)
             ->update(['state' => $state]);
 
 

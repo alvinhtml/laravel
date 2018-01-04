@@ -41,6 +41,22 @@ Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
     Route::get('admin/del/{id}', 'Admin\AdminController@del');
     Route::get('admin/edit_state/{id}', 'Admin\AdminController@edit_state');
 
+    //term list
+    Route::get('term', 'TermController@showTermList');
+    Route::get('term/list', 'TermController@showTermList');
+    Route::post('term/edit/{id?}', 'TermController@add');
+    Route::get('term/view/{id}', 'TermController@view');
+    Route::get('term/del/{id}', 'TermController@del');
+    // Route::get('term/edit_state/{id}', 'TermController@edit_state');
+
+    //term list
+    Route::get('ou', 'OuController@showOuList');
+    Route::get('ou/list', 'OuController@showOuList');
+    Route::post('ou/edit/{id?}', 'OuController@add');
+    Route::get('ou/view/{id}', 'OuController@view');
+    Route::get('ou/del/{id}', 'OuController@del');
+    // Route::get('ou/edit_state/{id}', 'OuController@edit_state');
+
     //logined info
     Route::get('authinfo', 'Admin\AdminController@authInfo')->name("authinfo");
     //Route::auth();

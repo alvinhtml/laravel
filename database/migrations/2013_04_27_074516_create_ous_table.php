@@ -14,9 +14,10 @@ class CreateOusTable extends Migration
     public function up()
     {
         Schema::create('ous', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name')->comment("名称");
-            $table->integer('ouid')->index()->comment("部门");
+            $table->integer('ou_id')->comment("部门")->index();
             $table->string('path')->comment("部门全路径");
             $table->text('desp')->comment("描述");
             $table->timestamps();

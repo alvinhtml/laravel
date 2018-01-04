@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Ou extends Model
+class Mac extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -12,6 +12,6 @@ class Ou extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'ou_id', 'path', 'desc',
+        'mac', 'ip', 'nicvendor', 'term_id',
     ];
 }
