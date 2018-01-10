@@ -101,12 +101,18 @@ class OuController extends Controller
 
         $datalist = $datalist->get();
 
+        $list = [];
+        $datalist->each(function ($item, $key) use (&$list) {
+            $ouname = $item->ou()->first()->name;
+            $list[] = array_merge($item->toArray(), ['ou'=>$ouname]);
+        });
+
         $configs['page'] = $page;
         $configs['limit'] = $limit;
         $configs['search'] = $search;
         $configs['order'] = $order;
         $results['configs'] = $configs;
-        $results['list'] = $datalist->toArray();
+        $results['list'] = $list;
         $results['count'] = $count;
 
 
@@ -127,7 +133,8 @@ class OuController extends Controller
             if ($datalist) {
                 $datalist->name = $request->input("name");
                 $datalist->ou_id = $request->input("ou_id");
-                $datalist->path = $request->input("path");
+                $path = $ou->where('ou_id', $datalist->ou_id)->first()->path;
+                $datalist->path = $path;
                 $datalist->desp = $request->input("desp");
                 $datalist->save();
 
@@ -142,7 +149,8 @@ class OuController extends Controller
 
             $datalist->name = $request->input("name");
             $datalist->ou_id = $request->input("ou_id");
-            $datalist->path = $request->input("path");
+            $path = $ou->where('ou_id', $datalist->ou_id)->first()->path;
+            $datalist->path = $path;
             $datalist->desp = $request->input("desp");
             $datalist->save();
 
@@ -182,20 +190,26 @@ class OuController extends Controller
 
     }
 
-    public function edit_state(Request $request, Ou $ou, $id)
+    public function componentlist(Request $request, Ou $ou)
     {
-        $idArray = explode(',', $id);
 
         $results = Error::make(0);
 
-        $state = (int)$request->input("state");
+        $datalist = $ou
+            ->limit(10)
+            ->get();
 
-        $ou::whereIn('id', $idArray)
-            ->update(['state' => $state]);
+        $list = [];
 
+        $datalist->each(function ($item, $key) use (&$list) {
+            $list[] = [
+                'id'=>$item->id,
+                'name'=>$item->name,
+                'path'=>$item->path
+            ];
+        });
 
-        $results['ids'] = $idArray;
-        $results['state'] = $state;
+        $results['ouObjectList'] = $list;
 
         return response()->json($results);
     }

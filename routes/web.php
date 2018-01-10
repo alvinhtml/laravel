@@ -49,12 +49,13 @@ Route::group(['middleware' => 'web', 'prefix' => 'api'], function () {
     Route::get('term/del/{id}', 'TermController@del');
     // Route::get('term/edit_state/{id}', 'TermController@edit_state');
 
-    //term list
+    //ou list
     Route::get('ou', 'OuController@showOuList');
     Route::get('ou/list', 'OuController@showOuList');
     Route::post('ou/edit/{id?}', 'OuController@add');
     Route::get('ou/view/{id}', 'OuController@view');
     Route::get('ou/del/{id}', 'OuController@del');
+    Route::get('ou/component', 'OuController@componentlist');
     // Route::get('ou/edit_state/{id}', 'OuController@edit_state');
 
     //logined info

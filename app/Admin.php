@@ -27,8 +27,8 @@ class Admin extends Authenticatable
         'password', 'remember_token',
     ];
 
-    // public function ou()
-    // {
-    //     return $this->belongsTo('App\Ou');
-    // }
+    public function ou()
+    {
+        return $this->belongsTo('App\Ou');
+    }
 }

@@ -116,12 +116,21 @@ class AdminController extends Controller
 
         $datalist = $datalist->get();
 
+
+        $list = [];
+        $datalist->each(function ($item, $key) use (&$list) {
+            $ouname = $item->ou()->first()->name;
+            $list[] = array_merge($item->toArray(), ['ou'=>$ouname]);
+        });
+
+
+
         $configs['page'] = $page;
         $configs['limit'] = $limit;
         $configs['search'] = $search;
         $configs['order'] = $order;
         $results['configs'] = $configs;
-        $results['list'] = $datalist->toArray();
+        $results['list'] = $list;
         $results['count'] = $count;
 
 
@@ -136,6 +145,7 @@ class AdminController extends Controller
      */
     public function add(Admin $admin, Request $request, $id = null)
     {
+
         if (isset($id)) {
             $datalist = $admin::find($id);
 

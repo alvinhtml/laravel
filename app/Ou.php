@@ -14,4 +14,9 @@ class Ou extends Model
     protected $fillable = [
         'name', 'ou_id', 'path', 'desc',
     ];
+
+    public function ou()
+    {
+        return $this->belongsTo('App\Ou');
+    }
 }

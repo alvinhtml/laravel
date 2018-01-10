@@ -32,7 +32,7 @@ class OusTableSeeder extends Seeder
     {
         App\Ou::create([
             'name' => '根部门',
-            'ou_id' => 0,
+            'ou_id' => 1,
             'path' => '/',
             'desp' => '',
         ]);
@@ -46,6 +46,18 @@ class OusTableSeeder extends Seeder
             'name' => '销售部',
             'ou_id' => 1,
             'path' => '/根部门/销售部',
+            'desp' => '',
+        ]);
+        App\Ou::create([
+            'name' => '研发',
+            'ou_id' => 2,
+            'path' => '/根部门/技术部/研发',
+            'desp' => '',
+        ]);
+        App\Ou::create([
+            'name' => 'UED',
+            'ou_id' => 2,
+            'path' => '/根部门/技术部/UED',
             'desp' => '',
         ]);
     }
@@ -69,6 +81,18 @@ class AdminsTableSeeder extends Seeder
 {
     public function run()
     {
+
+        App\Admin::create([
+            'name' => 'admin',
+            'email' => 'alvinhtml@gmail.com',
+            'password' => bcrypt('123456'),
+            'remember_token' => str_random(10),
+            'type' => 0,
+            'ou_id' => 1,
+            'state' => 0,
+            'desp' => '超级管理员',
+        ]);
+
         factory(App\Admin::class, 200)->create();
 
         // ->each(function ($u) {

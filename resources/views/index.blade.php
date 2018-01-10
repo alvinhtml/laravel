@@ -16,7 +16,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/public/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <!-- External CSS -->

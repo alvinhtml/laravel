@@ -27,6 +27,7 @@ class TermController extends Controller
     public function showTermList(Term $term, Setting $setting, Request $request)
     {
 
+
         $results = Error::make(0);
 
         //当前管理员用户邮箱
@@ -101,16 +102,38 @@ class TermController extends Controller
                 ->orderBy($order[0], $order[1]);
         }
 
-        $datalist = $datalist->get();
+        $datalist = $datalist->get(); //取到了 20条数据(终端表)
+        // macs 是 mac 表,  一台终端会有多个 mac
+
+
+        $list = [];
+        $datalist->each(function ($item, $key) use (&$list) {
+            $mac = array();
+            $ip = array();
+            $item->macs()->each(function($item2, $key) use (&$mac, &$ip) {
+                $mac[] = $item2->mac;
+                $ip[] = $item2->ip;
+            });
+            $ouname = $item->ou()->first()->name;
+            $username = $item->user()->first()->name;
+            $list[] = array_merge($item->toArray(), [
+                'mac'=>$mac,
+                'ip'=>$ip,
+                'ou'=>$ouname,
+                'user'=>$username,
+            ]);
+        });
+
+        //dd($list);
+
 
         $configs['page'] = $page;
         $configs['limit'] = $limit;
         $configs['search'] = $search;
         $configs['order'] = $order;
         $results['configs'] = $configs;
-        $results['list'] = $datalist->toArray();
+        $results['list'] = $list;
         $results['count'] = $count;
-
 
         return response()->json($results);
     }
