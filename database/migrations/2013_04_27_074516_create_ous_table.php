@@ -19,7 +19,7 @@ class CreateOusTable extends Migration
             $table->string('name')->comment("名称");
             $table->integer('ou_id')->comment("部门")->index();
             $table->string('path')->comment("部门全路径");
-            $table->text('desp')->comment("描述");
+            $table->text('desp')->nullable()->comment("描述");
             $table->timestamps();
         });
     }

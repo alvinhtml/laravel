@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password', 255);
+            $table->text('desp')->nullable()->comment("描述");
             $table->rememberToken();
             $table->timestamps();
         });

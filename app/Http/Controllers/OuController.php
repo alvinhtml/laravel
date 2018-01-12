@@ -127,16 +127,27 @@ class OuController extends Controller
      */
     public function add(Ou $ou, Request $request, $id = null)
     {
+
         if (isset($id)) {
+
+
+            // if ($id == 1) {
+            //     $results = Error::make(202);
+            //     $results['ids'] = $idArray;
+            //     return response()->json($results);
+            // }
+
+
             $datalist = $ou::find($id);
 
             if ($datalist) {
                 $datalist->name = $request->input("name");
-                $datalist->ou_id = $request->input("ou_id");
-                $path = $ou->where('ou_id', $datalist->ou_id)->first()->path;
-                $datalist->path = $path;
-                $datalist->desp = $request->input("desp");
+                $datalist->ou_id = (int) $request->input("ou_id");
+                $path = $ou->where('id', $datalist->ou_id)->first()->path;
+                $datalist->path = $path . '/' . $datalist->name;
+                $datalist->desp = $request->input("desp", '');
                 $datalist->save();
+
 
                 $results = Error::make(0);
 
@@ -148,10 +159,10 @@ class OuController extends Controller
             $datalist = new Ou;
 
             $datalist->name = $request->input("name");
-            $datalist->ou_id = $request->input("ou_id");
-            $path = $ou->where('ou_id', $datalist->ou_id)->first()->path;
-            $datalist->path = $path;
-            $datalist->desp = $request->input("desp");
+            $datalist->ou_id = (int) $request->input("ou_id");
+            $path = $ou->where('id', $datalist->ou_id)->first()->path;
+            $datalist->path = $path . '/' . $datalist->name;
+            $datalist->desp = $request->input("desp", '');
             $datalist->save();
 
             $results = Error::make(0);
@@ -193,11 +204,17 @@ class OuController extends Controller
     public function componentlist(Request $request, Ou $ou)
     {
 
-        $results = Error::make(0);
-
-        $datalist = $ou
-            ->limit(10)
-            ->get();
+        // dd($request->has('search'));
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $datalist = $ou->where('name', 'like', '%'.$search.'%')
+                ->limit(10)
+                ->get();
+        } else {
+            $datalist = $ou
+                ->limit(10)
+                ->get();
+        }
 
         $list = [];
 
@@ -208,6 +225,8 @@ class OuController extends Controller
                 'path'=>$item->path
             ];
         });
+
+        $results = Error::make(0);
 
         $results['ouObjectList'] = $list;
 

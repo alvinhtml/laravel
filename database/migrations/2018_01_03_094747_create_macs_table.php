@@ -17,8 +17,8 @@ class CreateMacsTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('mac')->unique()->comment("mac地址");
-            $table->string('ip')->index()->comment("ip地址");
-            $table->string('nicvendor')->comment("mac厂商");
+            $table->string('ip')->nullable()->index()->comment("ip地址");
+            $table->string('nicvendor')->nullable()->comment("mac厂商");
             $table->integer('term_id')->unsigned()->comment("term");
             $table->foreign('term_id')->references('id')->on('terms');
             $table->timestamps();

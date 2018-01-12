@@ -79,10 +79,12 @@ class TermController extends Controller
             $datalist = $term->where('name', 'like', '%'.$search.'%')
                 ->orWhere('os', 'like', '%'.$search.'%')
                 ->orWhere('hostname', 'like', '%'.$search.'%')
+                // ->orWhere('mac', 'like', '%'.$search.'%')
                 ->orWhere('desp', 'like', '%'.$search.'%');
             //获取最大页数
             $count = $datalist->count();
         }
+        //SELECT t.id, t.name, m.mac FROM terms t, macs m WHERE (m.mac like '%FF%' and m.term_id=t.id) or (t.name like '%FF')
 
         //页码不能超过最大页码
         $page = min($page, ceil($count / $limit));

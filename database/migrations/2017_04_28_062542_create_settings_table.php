@@ -18,7 +18,7 @@ class CreateSettingsTable extends Migration
             $table->increments('id');
             $table->string('name')->comment("配置名称");
             $table->string('admin')->comment("管理员");
-            $table->text('setting')->comment("配置信息");
+            $table->text('setting')->nullable()->comment("配置信息");
             $table->index(['name', 'admin']);
             $table->timestamps();
         });

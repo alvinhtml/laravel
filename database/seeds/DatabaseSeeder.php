@@ -33,7 +33,7 @@ class OusTableSeeder extends Seeder
         App\Ou::create([
             'name' => '根部门',
             'ou_id' => 1,
-            'path' => '/',
+            'path' => '/根部门',
             'desp' => '',
         ]);
         App\Ou::create([
